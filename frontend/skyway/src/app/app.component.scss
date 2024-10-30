@@ -1,0 +1,49 @@
+// src/app/app.component.scss
+.navbar {
+    background-color: white;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    color: #DC2626;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    
+    &:hover {
+      color: darken(#DC2626, 10%);
+    }
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    
+    a {
+      color: #4B5563;
+      text-decoration: none;
+      font-weight: 500;
+      
+      &:hover {
+        color: #DC2626;
+      }
+    }
+  }
+  
+  .main-content {
+    min-height: calc(100vh - 4rem);
+    background-color: #F9FAFB;
+  }
