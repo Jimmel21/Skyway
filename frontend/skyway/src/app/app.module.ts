@@ -1,4 +1,5 @@
-import { NgModule } from '@angular/core';
+// import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
@@ -40,11 +41,6 @@ import { BookingConfirmationComponent } from './components/booking-confirmation/
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    RouterModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
     // Material Modules
     MatToolbarModule,
     MatInputModule,
@@ -55,8 +51,15 @@ import { BookingConfirmationComponent } from './components/booking-confirmation/
     MatSelectModule,
     MatIconModule,
     MatTabsModule,
-    MatDividerModule
+    MatDividerModule,
+    // RouterModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [],
   bootstrap: [AppComponent]
 })
