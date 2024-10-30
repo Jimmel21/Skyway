@@ -1,68 +1,85 @@
-
+<!-- src/app/components/home/home.component.html -->
 <div class="home-container">
-  <h1>Discover Your Next Adventure</h1>
-  
-  <div class="search-card">
-    <div class="trip-types">
-      <button 
-        [class.active]="tripType === 'roundtrip'"
-        (click)="tripType = 'roundtrip'">
-        Roundtrip
-      </button>
-      <button 
-        [class.active]="tripType === 'oneway'"
-        (click)="tripType = 'oneway'">
-        One Way
-      </button>
-      <button 
-        [class.active]="tripType === 'recent'"
-        (click)="tripType = 'recent'">
-        Recent Searches
-      </button>
-    </div>
-
-    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
-      <div class="search-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>From</mat-label>
-          <input matInput formControlName="from" placeholder="City or airport">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>To</mat-label>
-          <input matInput formControlName="to" placeholder="City or airport">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Guests</mat-label>
-          <input matInput formControlName="guests" type="number" min="1">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Depart Date</mat-label>
-          <input matInput [matDatepicker]="departPicker" formControlName="departDate">
-          <mat-datepicker-toggle matSuffix [for]="departPicker"></mat-datepicker-toggle>
-          <mat-datepicker #departPicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" *ngIf="tripType === 'roundtrip'">
-          <mat-label>Return Date</mat-label>
-          <input matInput [matDatepicker]="returnPicker" formControlName="returnDate">
-          <mat-datepicker-toggle matSuffix [for]="returnPicker"></mat-datepicker-toggle>
-          <mat-datepicker #returnPicker></mat-datepicker>
-        </mat-form-field>
-
-        <button mat-raised-button color="primary" type="submit">Search</button>
+    <h1>Discover Your Next Adventure</h1>
+    
+    <div class="search-card">
+      <div class="trip-types">
+        <button type="button" 
+                [class.active]="tripType === 'roundtrip'"
+                (click)="onTripTypeChange('roundtrip')">
+          Roundtrip
+        </button>
+        <button type="button" 
+                [class.active]="tripType === 'oneway'"
+                (click)="onTripTypeChange('oneway')">
+          One Way
+        </button>
+        <button type="button" 
+                [class.active]="tripType === 'recent'"
+                (click)="onTripTypeChange('recent')">
+          Recent Searches
+        </button>
       </div>
-    </form>
-  </div>
-
-  <app-featured-destinations></app-featured-destinations>
   
-  <div class="why-choose">
-    <h2>Why Choose SkyWay?</h2>
-    <p>Experience exceptional service, convenient routes, and the comfort of our modern fleet.<br>
-       Your journey begins with us.</p>
+      <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+        <div class="search-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>From</mat-label>
+            <input matInput formControlName="from" placeholder="City or airport">
+            <mat-error *ngIf="fromControl?.errors?.['required'] && fromControl?.touched">
+              Please select a departure city
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline">
+            <mat-label>To</mat-label>
+            <input matInput formControlName="to" placeholder="City or airport">
+            <mat-error *ngIf="toControl?.errors?.['required'] && toControl?.touched">
+              Please select a destination
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline">
+            <mat-label>Guests</mat-label>
+            <input matInput type="number" formControlName="guests" min="1">
+            <mat-error *ngIf="guestsControl?.errors?.['required'] && guestsControl?.touched">
+              Please enter number of guests
+            </mat-error>
+            <mat-error *ngIf="guestsControl?.errors?.['min'] && guestsControl?.touched">
+              Minimum 1 guest required
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline">
+            <mat-label>Depart Date</mat-label>
+            <input matInput [matDatepicker]="departPicker" formControlName="departDate">
+            <mat-datepicker-toggle matSuffix [for]="departPicker"></mat-datepicker-toggle>
+            <mat-datepicker #departPicker></mat-datepicker>
+            <mat-error *ngIf="departDateControl?.errors?.['required'] && departDateControl?.touched">
+              Please select a departure date
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" *ngIf="tripType === 'roundtrip'">
+            <mat-label>Return Date</mat-label>
+            <input matInput [matDatepicker]="returnPicker" formControlName="returnDate">
+            <mat-datepicker-toggle matSuffix [for]="returnPicker"></mat-datepicker-toggle>
+            <mat-datepicker #returnPicker></mat-datepicker>
+            <mat-error *ngIf="returnDateControl?.errors?.['required'] && returnDateControl?.touched">
+              Please select a return date
+            </mat-error>
+          </mat-form-field>
+  
+          <button mat-raised-button color="primary" type="submit">
+            Search Flights
+          </button>
+        </div>
+      </form>
+    </div>
+  
+    <div class="why-choose">
+      <h2>Why Choose SkyWay?</h2>
+      <p>Experience exceptional service, convenient routes, and the comfort of our modern fleet.<br>
+         Your journey begins with us.</p>
+    </div>
   </div>
-</div>
-

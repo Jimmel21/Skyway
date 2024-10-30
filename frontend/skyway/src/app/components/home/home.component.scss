@@ -1,21 +1,22 @@
-
+// src/app/components/home/home.component.scss
 .home-container {
-    padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 2rem 1rem;
+  }
   
-    h1 {
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 2rem;
-    }
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #111827;
   }
   
   .search-card {
     background: white;
     padding: 2rem;
     border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 3rem;
   }
   
@@ -30,10 +31,15 @@
       background: #f3f4f6;
       border-radius: 0.375rem;
       cursor: pointer;
+      font-size: 1rem;
   
       &.active {
-        background: var(--primary-color);
+        background: #DC2626;
         color: white;
+      }
+  
+      &:hover:not(.active) {
+        background: #e5e7eb;
       }
     }
   }
@@ -42,10 +48,16 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
+  }
   
-    button[type="submit"] {
-      height: 3.5rem;
-      margin-top: 0.25rem;
+  .search-button {
+    height: 3.5rem;
+    margin-top: 0.25rem;
+    background-color: #DC2626;
+    color: white;
+  
+    &:hover {
+      background-color: darken(#DC2626, 10%);
     }
   }
   
@@ -56,10 +68,21 @@
     h2 {
       font-size: 2rem;
       margin-bottom: 1rem;
+      color: #111827;
     }
   
     p {
       color: #6b7280;
       line-height: 1.6;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .search-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    h1 {
+      font-size: 2rem;
     }
   }

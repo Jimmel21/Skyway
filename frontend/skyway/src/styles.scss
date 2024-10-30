@@ -1,26 +1,68 @@
-// src/styles.scss
-@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+@use '@angular/material' as mat;
+@include mat.core();
 
-:root {
-  --primary-color: #DC2626;
-  --text-color: #111827;
-  --border-color: #E5E7EB;
-  --background-color: #F9FAFB;
-}
+// Include common styles for Angular Material
+@include mat.core();
 
-* {
+// Define primary color palette
+$primary-palette: (
+  50: #fef2f2,
+  100: #fee2e2,
+  500: #dc2626,
+  700: #b91c1c,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    500: white,
+    700: white,
+  )
+);
+
+
+
+
+$myapp-theme-primary: mat.m2-define-palette(mat.$m2-indigo-palette, A400, A100, A700);
+$myapp-theme-accent: mat.m2-define-palette(mat.$m2-indigo-palette);
+$myapp-theme-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$myapp-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $myapp-theme-primary,
+    accent: $myapp-theme-accent,
+    warn: $myapp-theme-warn,
+  )
+));
+
+@include mat.all-component-themes($myapp-theme);
+
+// // Define the theme
+// $theme-primary: mat.define-palette($primary-palette);
+// $theme-accent: mat.define-palette(mat.$grey-palette);
+// $theme-warn: mat.define-palette(mat.$red-palette);
+
+// $theme: mat.define-light-theme((
+//   color: (
+//     primary: $theme-primary,
+//     accent: $theme-accent,
+//     warn: $theme-warn,
+//   )
+// ));
+
+// // Apply the theme
+// @include mat.all-component-themes($theme);
+
+// Global styles
+html, body {
+  height: 100%;
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
 body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  color: var(--text-color);
-  background-color: var(--background-color);
+  background-color: #F9FAFB;
 }
 
+// Utility classes
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -28,7 +70,7 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
+  background-color: #DC2626;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -36,12 +78,15 @@ body {
   cursor: pointer;
   
   &:hover {
-    background-color: darken(#DC2626, 10%);
+    background-color: #B91C1C;
   }
 }
 
+// Material overrides
 .mat-mdc-form-field {
   width: 100%;
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-mdc-raised-button.mat-primary {
+  background-color: #DC2626;
+}
