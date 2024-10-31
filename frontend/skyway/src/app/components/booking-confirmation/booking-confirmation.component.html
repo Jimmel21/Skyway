@@ -1,1 +1,61 @@
-<p>booking-confirmation works!</p>
+<div class="booking-container">
+    <nav class="navbar">
+      <div class="logo">SkyWay</div>
+      <div class="nav-links">
+        <a href="#" class="nav-link">Search</a>
+        <a href="#" class="nav-link">My Trips</a>
+      </div>
+    </nav>
+  
+    <div class="confirmation-content">
+      <div class="success-icon">
+        <div class="circle"></div>
+      </div>
+  
+      <h1>Booking Confirmed!</h1>
+      
+      <p class="thank-you-message">
+        Thank you for choosing SkyWay Airlines. Your booking has been successfully confirmed.
+      </p>
+  
+      <div class="booking-details-card">
+        <h2>Booking Details</h2>
+        
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="label">Booking Reference:</span>
+            <span class="value">{{bookingDetails.reference}}</span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="label">Flight:</span>
+            <span class="value">{{bookingDetails.flight}}</span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="label">Date:</span>
+            <span class="value">{{bookingDetails.date}}</span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="label">Passenger:</span>
+            <span class="value">{{bookingDetails.passenger}}</span>
+          </div>
+        </div>
+  
+        <div class="action-buttons">
+          <button class="btn btn-primary" (click)="downloadETicket()">
+            Download E-Ticket
+          </button>
+          <button class="btn btn-secondary" (click)="printConfirmation()">
+            Print Confirmation
+          </button>
+        </div>
+      </div>
+  
+      <div class="additional-info">
+        <p>We've sent a confirmation email to your registered email address.</p>
+        <p>If you have any questions, please contact our customer support.</p>
+      </div>
+    </div>
+  </div>

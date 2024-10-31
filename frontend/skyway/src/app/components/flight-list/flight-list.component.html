@@ -1,1 +1,71 @@
-<p>flight-list works!</p>
+<div class="flight-results-container">
+  <nav class="navbar">
+    <div class="logo">SkyWay</div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">Search</a>
+      <a href="#" class="nav-link">My Trips</a>
+    </div>
+  </nav>
+
+  <div class="results-content">
+    <div class="results-header">
+      <div class="header-main">
+        <h1>Flight Results</h1>
+        <button class="filter-btn">Filter</button>
+      </div>
+
+      <div class="search-summary">
+        <div class="route-info">
+          <h2>{{searchDetails.origin}} to {{searchDetails.destination}}</h2>
+          <p>{{searchDetails.date}} | {{searchDetails.passengers}} Adult</p>
+        </div>
+        <button class="change-btn" (click)="changeSearch()">Change</button>
+      </div>
+
+      <div class="sort-options">
+        <div class="sort-button" 
+             [class.active]="selectedSort === 'cheapest'"
+             (click)="sortFlights('cheapest')">
+          Cheapest
+        </div>
+        <div class="sort-button" 
+             [class.active]="selectedSort === 'fastest'"
+             (click)="sortFlights('fastest')">
+          Fastest
+        </div>
+        <div class="sort-button" 
+             [class.active]="selectedSort === 'best'"
+             (click)="sortFlights('best')">
+          Best Value
+        </div>
+      </div>
+    </div>
+
+    <div class="flights-list">
+      <div class="flight-card" *ngFor="let flight of flights">
+        <div class="flight-details">
+          <div class="time-info">
+            <span class="time">{{flight.departureTime}} - {{flight.arrivalTime}}</span>
+          </div>
+          <div class="route-info">
+            <span>{{flight.origin}} - {{flight.destination}}</span>
+          </div>
+          <div class="duration">
+            <span>{{flight.duration}}</span>
+          </div>
+        </div>
+        
+        <div class="price-section">
+          <span class="price">${{flight.price}}</span>
+          <button class="select-btn" (click)="selectFlight(flight)">Select</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="load-more">
+      <button class="load-more-btn" (click)="loadMore()">
+        Load More Results
+      </button>
+    </div>
+  </div>
+</div>

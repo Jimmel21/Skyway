@@ -10,7 +10,7 @@ export const routes: Routes = [
   {
     path: 'flights',
     loadComponent: () => import('./components/flight-list/flight-list.component')
-      .then(m => m.FlightListComponent)
+      .then(m => m.FlightResultsComponent)
   },
   {
     path: 'passenger-info',
@@ -20,7 +20,7 @@ export const routes: Routes = [
   {
     path: 'payment',
     loadComponent: () => import('./components/payment/payment.component')
-      .then(m => m.PaymentComponent)
+      .then(m => m.PaymentSummaryComponent)
   },
   {
     path: 'confirmation',
