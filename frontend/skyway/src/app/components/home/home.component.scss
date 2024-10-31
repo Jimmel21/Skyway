@@ -1,88 +1,88 @@
-// src/app/components/home/home.component.scss
 .home-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid #eee;
+
+  .logo {
+    color: #ff0000;
+    font-size: 1.5rem;
+    font-weight: bold;
   }
-  
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+
+    .nav-link {
+      color: #666;
+      text-decoration: none;
+      
+      &:hover {
+        color: #333;
+      }
+    }
+  }
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+
   h1 {
     text-align: center;
     font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: #111827;
+    color: #333;
+    margin: 2rem 0 3rem;
   }
-  
-  .search-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 3rem;
+}
+
+.why-choose {
+  text-align: center;
+  max-width: 800px;
+  margin: 4rem auto;
+  padding: 2rem;
+
+  h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
   }
-  
-  .trip-types {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  
-    button {
-      padding: 0.5rem 1rem;
-      border: none;
-      background: #f3f4f6;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      font-size: 1rem;
-  
-      &.active {
-        background: #DC2626;
-        color: white;
-      }
-  
-      &:hover:not(.active) {
-        background: #e5e7eb;
-      }
-    }
+
+  p {
+    color: #666;
+    line-height: 1.6;
   }
-  
-  .search-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-  
-  .search-button {
-    height: 3.5rem;
-    margin-top: 0.25rem;
-    background-color: #DC2626;
-    color: white;
-  
-    &:hover {
-      background-color: darken(#DC2626, 10%);
-    }
-  }
-  
-  .why-choose {
-    text-align: center;
-    margin-top: 4rem;
-  
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: #111827;
-    }
-  
-    p {
-      color: #6b7280;
-      line-height: 1.6;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .search-grid {
-      grid-template-columns: 1fr;
-    }
-  
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 1rem;
+
     h1 {
       font-size: 2rem;
+      margin: 1.5rem 0 2rem;
     }
   }
+
+  .navbar {
+    padding: 1rem;
+  }
+
+  .why-choose {
+    margin: 2rem auto;
+    padding: 1rem;
+
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+}

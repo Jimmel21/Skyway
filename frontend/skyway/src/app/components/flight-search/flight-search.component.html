@@ -1,1 +1,70 @@
-<p>flight-search works!</p>
+<div class="search-container">
+    <div class="trip-types">
+      <button type="button" 
+              [class.active]="tripType === 'roundtrip'"
+              (click)="onTripTypeChange('roundtrip')">
+        Roundtrip
+      </button>
+      <button type="button"
+              [class.active]="tripType === 'oneway'"
+              (click)="onTripTypeChange('oneway')">
+        One Way
+      </button>
+      <button type="button"
+              [class.active]="tripType === 'recent'"
+              (click)="onTripTypeChange('recent')">
+        Recent Searches
+      </button>
+    </div>
+  
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+      <div class="search-fields">
+        <!-- First row with From and To fields -->
+        <div class="input-row">
+          <div class="input-group half-width">
+            <input type="text" 
+                   formControlName="from"
+                   placeholder="From">
+          </div>
+  
+          <!-- Add margin between the fields -->
+          <div class="spacer"></div>
+  
+          <div class="input-group half-width">
+            <input type="text" 
+                   formControlName="to"
+                   placeholder="To">
+          </div>
+          
+          <!-- Dummy div to match the width of the second row -->
+          <div class="input-group quarter-width"></div>
+        </div>
+  
+        <!-- Second row with other fields -->
+        <div class="input-row">
+          <div class="input-group quarter-width">
+            <input type="text" 
+                   formControlName="guests"
+                   placeholder="1 Guest">
+          </div>
+  
+          <div class="input-group quarter-width">
+            <input type="text" 
+                   formControlName="departDate"
+                   placeholder="Depart Date">
+          </div>
+  
+          <div class="input-group quarter-width" *ngIf="tripType === 'roundtrip'">
+            <input type="text" 
+                   formControlName="returnDate"
+                   placeholder="Return Date">
+          </div>
+  
+          <div class="input-group quarter-width">
+            <button type="submit" class="search-button">Search</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  

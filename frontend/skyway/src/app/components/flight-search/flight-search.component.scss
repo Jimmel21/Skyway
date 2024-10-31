@@ -1,0 +1,89 @@
+.search-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .trip-types {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .search-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .input-row {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+  }
+  
+  .input-group {
+    position: relative;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #E5E7EB;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+  }
+  
+  .half-width {
+    width: 50%;
+  }
+  
+  .quarter-width {
+    width: 25%;
+  }
+  
+  .search-button {
+    padding: 12px;
+    background-color: #DC2626; /* Red color matching the screenshot */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    width: 100%;
+  }
+  
+  .search-button:hover {
+    background-color: #B91C1C; /* Darker red for hover state */
+  }
+  
+  /* Trip type buttons */
+  .trip-types button {
+    padding: 8px 16px;
+    border: none;
+    background-color: #F3F4F6;
+    color: #6B7280;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .trip-types button.active {
+    background-color: #DC2626; /* Red color for active state */
+    color: white;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .input-row {
+      flex-direction: column;
+    }
+    
+    .half-width,
+    .quarter-width {
+      width: 100%;
+    }
+  }

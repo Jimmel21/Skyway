@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 interface Flight {
   departureTime: string;
@@ -19,7 +21,12 @@ interface FlightSearch {
 @Component({
   selector: 'app-flight-results',
   templateUrl: './flight-list.component.html',
-  styleUrls: ['./flight-list.component.scss']
+  styleUrls: ['./flight-list.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule
+  ]
 })
 export class FlightResultsComponent implements OnInit {
   flights: Flight[] = [
