@@ -2,18 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
-interface FlightDetails {
-  from: string;
-  to: string;
-  date: string;
-  passengers: string;
-}
-
-interface PriceSummary {
-  baseFare: number;
-  taxesAndFees: number;
-  total: number;
+interface CardType {
+  name: string;
+  pattern: RegExp;
+  icon: string;
 }
 
 @Component({
@@ -24,20 +18,72 @@ interface PriceSummary {
   imports: [
     CommonModule,
     ReactiveFormsModule
+  ],
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({
+        opacity: 0,
+        transform: 'translateY(-10px)'
+      })),
+      transition(':enter', [
+        animate('200ms ease-out')
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in')
+      ])
+    ]),
+    trigger('loadingState', [
+      state('loading', style({
+        opacity: 0.7,
+        pointerEvents: 'none'
+      })),
+      state('not-loading', style({
+        opacity: 1
+      })),
+      transition('loading <=> not-loading', [
+        animate('200ms ease-in-out')
+      ])
+    ])
   ]
 })
 export class PaymentSummaryComponent implements OnInit {
-  paymentForm: FormGroup;
+  paymentForm!: FormGroup;
   isProcessing = false;
+  detectedCardType: string = '';
+  isCardFlipped = false;
+  isCvvFocused = false;
 
-  flightDetails: FlightDetails = {
+  readonly cardTypes: CardType[] = [
+    {
+      name: 'visa',
+      pattern: /^4/,
+      icon: 'visa-icon'
+    },
+    {
+      name: 'mastercard',
+      pattern: /^5[1-5]/,
+      icon: 'mastercard-icon'
+    },
+    {
+      name: 'amex',
+      pattern: /^3[47]/,
+      icon: 'amex-icon'
+    },
+    {
+      name: 'discover',
+      pattern: /^6(?:011|5)/,
+      icon: 'discover-icon'
+    }
+  ];
+
+  flightDetails = {
     from: 'New York (JFK)',
     to: 'London (LHR)',
     date: 'June 15, 2023',
     passengers: '1 Adult'
   };
 
-  priceSummary: PriceSummary = {
+  priceSummary = {
     baseFare: 400,
     taxesAndFees: 50,
     total: 450
@@ -46,7 +92,14 @@ export class PaymentSummaryComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router
-  ) {
+  ) {}
+
+  ngOnInit(): void {
+    this.initializeForm();
+    this.setupFormListeners();
+  }
+
+  private initializeForm(): void {
     this.paymentForm = this.fb.group({
       cardNumber: ['', [
         Validators.required,
@@ -54,7 +107,7 @@ export class PaymentSummaryComponent implements OnInit {
       ]],
       expiryDate: ['', [
         Validators.required,
-        Validators.pattern('^(0[1-9]|1[0-2])\/([0-9]{2})$')
+        Validators.pattern('^(0[1-9]|1[0-2])\/?([0-9]{2})$')
       ]],
       cvv: ['', [
         Validators.required,
@@ -67,7 +120,59 @@ export class PaymentSummaryComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  private setupFormListeners(): void {
+    // Listen for card number changes
+    this.paymentForm.get('cardNumber')?.valueChanges.subscribe(value => {
+      this.detectCardType(value);
+    });
+  }
+
+  detectCardType(number: string): void {
+    if (!number) {
+      this.detectedCardType = '';
+      return;
+    }
+
+    const matchedCard = this.cardTypes.find(card => card.pattern.test(number));
+    this.detectedCardType = matchedCard ? matchedCard.name : '';
+  }
+
+  formatCardNumber(event: any): void {
+    let input = event.target.value.replace(/\D/g, '');
+    if (input.length > 16) input = input.substr(0, 16);
+    
+    // Format with spaces
+    let formatted = '';
+    for (let i = 0; i < input.length; i++) {
+      if (i > 0 && i % 4 === 0) {
+        formatted += ' ';
+      }
+      formatted += input[i];
+    }
+    
+    event.target.value = formatted;
+    this.paymentForm.patchValue({ cardNumber: input }, { emitEvent: false });
+  }
+
+  formatExpiryDate(event: any): void {
+    let input = event.target.value.replace(/\D/g, '');
+    if (input.length > 4) input = input.substr(0, 4);
+    if (input.length > 2) {
+      input = input.substr(0, 2) + '/' + input.substr(2);
+    }
+    event.target.value = input;
+    this.paymentForm.patchValue({ expiryDate: input }, { emitEvent: false });
+  }
+
+  onCvvFocus(): void {
+    this.isCardFlipped = true;
+    this.isCvvFocused = true;
+  }
+
+  onCvvBlur(): void {
+    this.isCardFlipped = false;
+    this.isCvvFocused = false;
+  }
 
   getErrorMessage(fieldName: string): string {
     const control = this.paymentForm.get(fieldName);
@@ -78,70 +183,35 @@ export class PaymentSummaryComponent implements OnInit {
 
     switch (fieldName) {
       case 'cardNumber':
-        if (control.errors['required']) {
-          return 'Card number is required';
-        }
-        if (control.errors['pattern']) {
-          return 'Please enter a valid 16-digit card number';
-        }
+        if (control.errors['required']) return 'Card number is required';
+        if (control.errors['pattern']) return 'Please enter a valid 16-digit card number';
         break;
-
       case 'expiryDate':
-        if (control.errors['required']) {
-          return 'Expiry date is required';
-        }
-        if (control.errors['pattern']) {
-          return 'Please enter a valid expiry date (MM/YY)';
-        }
+        if (control.errors['required']) return 'Expiry date is required';
+        if (control.errors['pattern']) return 'Please enter a valid expiry date (MM/YY)';
         break;
-
       case 'cvv':
-        if (control.errors['required']) {
-          return 'CVV is required';
-        }
-        if (control.errors['pattern']) {
-          return 'Please enter a valid CVV number';
-        }
+        if (control.errors['required']) return 'CVV is required';
+        if (control.errors['pattern']) return 'Please enter a valid CVV';
         break;
-
       case 'nameOnCard':
-        if (control.errors['required']) {
-          return 'Name on card is required';
-        }
-        if (control.errors['minlength']) {
-          return 'Name must be at least 3 characters long';
-        }
+        if (control.errors['required']) return 'Name is required';
+        if (control.errors['minlength']) return 'Name must be at least 3 characters';
         break;
     }
-
     return 'Invalid input';
-  }
-
-  formatCardNumber(event: any): void {
-    let input = event.target.value.replace(/\D/g, '');
-    if (input.length > 16) input = input.substr(0, 16);
-    event.target.value = input;
-  }
-
-  formatExpiryDate(event: any): void {
-    let input = event.target.value.replace(/\D/g, '');
-    if (input.length > 4) input = input.substr(0, 4);
-    if (input.length > 2) {
-      input = input.substr(0, 2) + '/' + input.substr(2);
-    }
-    event.target.value = input;
   }
 
   async onSubmit(): Promise<void> {
     if (this.paymentForm.valid) {
       this.isProcessing = true;
       try {
-        // Here you would integrate with your payment processing service
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-        console.log('Payment processed successfully');
+        // Simulate payment processing
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log('Payment processed:', this.paymentForm.value);
         this.router.navigate(['/booking-confirmation']);
       } catch (error) {
-        console.error('Payment processing failed:', error);
+        console.error('Payment failed:', error);
       } finally {
         this.isProcessing = false;
       }
@@ -155,8 +225,8 @@ export class PaymentSummaryComponent implements OnInit {
     }
   }
 
-  hasError(fieldName: string, errorType: string): boolean {
-    const control = this.paymentForm.get(fieldName);
-    return control?.touched && control?.hasError(errorType) || false;
+  getCardIcon(): string {
+    const card = this.cardTypes.find(c => c.name === this.detectedCardType);
+    return card ? card.icon : 'generic-card-icon';
   }
 }

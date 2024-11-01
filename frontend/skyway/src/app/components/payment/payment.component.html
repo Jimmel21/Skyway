@@ -1,61 +1,124 @@
-<!-- Replace the error message sections in your template with this updated version -->
-<div class="form-group">
-    <label for="cardNumber">Card Number</label>
-    <input 
-      id="cardNumber"
-      type="text"
-      formControlName="cardNumber"
-      (input)="formatCardNumber($event)"
-      [class.error]="hasError('cardNumber', 'required') || hasError('cardNumber', 'pattern')"
-      placeholder="1234 5678 9012 3456"
-    >
-    <span class="error-message" *ngIf="paymentForm.get('cardNumber')?.touched">
-      {{getErrorMessage('cardNumber')}}
-    </span>
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group">
-      <label for="expiryDate">Expiry Date</label>
-      <input 
-        id="expiryDate"
-        type="text"
-        formControlName="expiryDate"
-        (input)="formatExpiryDate($event)"
-        [class.error]="hasError('expiryDate', 'required') || hasError('expiryDate', 'pattern')"
-        placeholder="MM/YY"
-      >
-      <span class="error-message" *ngIf="paymentForm.get('expiryDate')?.touched">
-        {{getErrorMessage('expiryDate')}}
-      </span>
+<div class="payment-container" [@loadingState]="isProcessing ? 'loading' : 'not-loading'">
+  <div class="content">
+    <h1>Summary and Payment</h1>
+
+    <div class="summary-grid">
+      <div class="details-section">
+        <h2>Flight Details</h2>
+        <div class="details-content" @fadeInOut>
+          <!-- Flight details content remains the same -->
+        </div>
+
+        <h2>Payment Information</h2>
+        <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+          <div class="card-preview" [class.flipped]="isCardFlipped || isCvvFocused">
+            <div class="card-front">
+              <div class="card-type" *ngIf="detectedCardType">
+                <img [src]="'/assets/card-icons/' + getCardIcon() + '.svg'" 
+                     [alt]="detectedCardType"
+                     class="card-logo">
+              </div>
+              <div class="card-number">
+                {{paymentForm.get('cardNumber')?.value || '•••• •••• •••• ••••'}}
+              </div>
+              <div class="card-details">
+                <div class="card-name">
+                  {{paymentForm.get('nameOnCard')?.value || 'CARD HOLDER'}}
+                </div>
+                <div class="card-expiry">
+                  {{paymentForm.get('expiryDate')?.value || 'MM/YY'}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group card-number-group">
+            <label for="cardNumber">Card Number</label>
+            <div class="input-wrapper">
+              <input 
+                id="cardNumber"
+                type="text"
+                formControlName="cardNumber"
+                (input)="formatCardNumber($event)"
+                placeholder="1234 5678 9012 3456"
+                [class.valid]="detectedCardType"
+              >
+              <span class="card-type-indicator" *ngIf="detectedCardType" @fadeInOut>
+                <img [src]="'/assets/card-icons/' + getCardIcon() + '.svg'" 
+                     [alt]="detectedCardType">
+              </span>
+            </div>
+            <span class="error-message" *ngIf="paymentForm.get('cardNumber')?.touched" @fadeInOut>
+              {{getErrorMessage('cardNumber')}}
+            </span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expiryDate">Expiry Date</label>
+              <input 
+                id="expiryDate"
+                type="text"
+                formControlName="expiryDate"
+                (input)="formatExpiryDate($event)"
+                placeholder="MM/YY"
+              >
+              <span class="error-message" *ngIf="paymentForm.get('expiryDate')?.touched" @fadeInOut>
+                {{getErrorMessage('expiryDate')}}
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label for="cvv">CVV</label>
+              <input 
+                id="cvv"
+                type="text"
+                formControlName="cvv"
+                placeholder="123"
+                maxlength="4"
+                (focus)="onCvvFocus()"
+                (blur)="onCvvBlur()"
+              >
+              <span class="error-message" *ngIf="paymentForm.get('cvv')?.touched" @fadeInOut>
+                {{getErrorMessage('cvv')}}
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="nameOnCard">Name on Card</label>
+            <input 
+              id="nameOnCard"
+              type="text"
+              formControlName="nameOnCard"
+              placeholder="John Doe"
+            >
+            <span class="error-message" *ngIf="paymentForm.get('nameOnCard')?.touched" @fadeInOut>
+              {{getErrorMessage('nameOnCard')}}
+            </span>
+          </div>
+        </form>
+      </div>
+
+      <div class="price-section">
+        <!-- Price summary content remains the same -->
+        <button 
+          class="pay-button" 
+          (click)="onSubmit()"
+          [disabled]="paymentForm.invalid || isProcessing">
+          <div class="button-content" @fadeInOut>
+            <span *ngIf="!isProcessing">Confirm and Pay</span>
+            <div class="loading-spinner" *ngIf="isProcessing">
+              <div class="spinner"></div>
+              <span>Processing...</span>
+            </div>
+          </div>
+        </button>
+
+        <p class="secure-payment">
+          Secure payment processed by Stripe
+        </p>
+      </div>
     </div>
-  
-    <div class="form-group">
-      <label for="cvv">CVV</label>
-      <input 
-        id="cvv"
-        type="text"
-        formControlName="cvv"
-        [class.error]="hasError('cvv', 'required') || hasError('cvv', 'pattern')"
-        placeholder="123"
-        maxlength="4"
-      >
-      <span class="error-message" *ngIf="paymentForm.get('cvv')?.touched">
-        {{getErrorMessage('cvv')}}
-      </span>
-    </div>
   </div>
-  
-  <div class="form-group">
-    <label for="nameOnCard">Name on Card</label>
-    <input 
-      id="nameOnCard"
-      type="text"
-      formControlName="nameOnCard"
-      [class.error]="hasError('nameOnCard', 'required') || hasError('nameOnCard', 'minlength')"
-      placeholder="John Doe"
-    >
-    <span class="error-message" *ngIf="paymentForm.get('nameOnCard')?.touched">
-      {{getErrorMessage('nameOnCard')}}
-    </span>
-  </div>
+</div>
