@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 interface BookingDetails {
   reference: string;
@@ -9,30 +11,34 @@ interface BookingDetails {
 
 @Component({
   selector: 'app-booking-confirmation',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './booking-confirmation.component.html',
-  styleUrls: ['./booking-confirmation.component.scss']
+  styleUrls: ['./booking-confirmation.component.scss'],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
-export class BookingConfirmationComponent implements OnInit {
-  bookingDetails: BookingDetails = {
+export class BookingConfirmationComponent {
+  @Input() booking: BookingDetails = {
     reference: 'SKY123456',
     flight: 'New York (JFK) to London (LHR)',
     date: 'June 15, 2023',
     passenger: 'John Doe'
   };
 
-  constructor() { }
-
-  ngOnInit(): void {
-    // Any initialization logic can go here
-  }
-
-  downloadETicket(): void {
-    // Implement e-ticket download logic
+  downloadETicket() {
+    // Implement download logic
     console.log('Downloading E-Ticket...');
   }
 
-  printConfirmation(): void {
+  printConfirmation() {
     // Implement print logic
-    window.print();
+    console.log('Printing confirmation...');
   }
 }

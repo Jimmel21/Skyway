@@ -1,61 +1,58 @@
-<div class="booking-container">
-    <!-- <nav class="navbar">
-      <div class="logo">SkyWay</div>
-      <div class="nav-links">
-        <a href="#" class="nav-link">Search</a>
-        <a href="#" class="nav-link">My Trips</a>
-      </div>
-    </nav>
-   -->
-    <div class="confirmation-content">
-      <div class="success-icon">
-        <div class="circle"></div>
-      </div>
+<div class="confirmation-container" @fadeIn>
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24" class="checkmark">
+      <path 
+        fill="none" 
+        stroke="currentColor" 
+        stroke-width="2" 
+        d="M5 13l4 4L19 7">
+      </path>
+    </svg>
+  </div>
+
+  <h1 class="title">Booking Confirmed!</h1>
   
-      <h1>Booking Confirmed!</h1>
+  <p class="subtitle">
+    Thank you for choosing SkyWay Airlines. Your booking has been successfully confirmed.
+  </p>
+
+  <div class="booking-card">
+    <h2 class="card-title">Booking Details</h2>
+    
+    <div class="details-grid">
+      <div class="detail-item">
+        <span class="label">Booking Reference:</span>
+        <span class="value">{{booking.reference}}</span>
+      </div>
       
-      <p class="thank-you-message">
-        Thank you for choosing SkyWay Airlines. Your booking has been successfully confirmed.
-      </p>
-  
-      <div class="booking-details-card">
-        <h2>Booking Details</h2>
-        
-        <div class="details-grid">
-          <div class="detail-item">
-            <span class="label">Booking Reference:</span>
-            <span class="value">{{bookingDetails.reference}}</span>
-          </div>
-          
-          <div class="detail-item">
-            <span class="label">Flight:</span>
-            <span class="value">{{bookingDetails.flight}}</span>
-          </div>
-          
-          <div class="detail-item">
-            <span class="label">Date:</span>
-            <span class="value">{{bookingDetails.date}}</span>
-          </div>
-          
-          <div class="detail-item">
-            <span class="label">Passenger:</span>
-            <span class="value">{{bookingDetails.passenger}}</span>
-          </div>
-        </div>
-  
-        <div class="action-buttons">
-          <button class="btn btn-primary" (click)="downloadETicket()">
-            Download E-Ticket
-          </button>
-          <button class="btn btn-secondary" (click)="printConfirmation()">
-            Print Confirmation
-          </button>
-        </div>
+      <div class="detail-item">
+        <span class="label">Flight:</span>
+        <span class="value">{{booking.flight}}</span>
       </div>
-  
-      <div class="additional-info">
-        <p>We've sent a confirmation email to your registered email address.</p>
-        <p>If you have any questions, please contact our customer support.</p>
+      
+      <div class="detail-item">
+        <span class="label">Date:</span>
+        <span class="value">{{booking.date}}</span>
+      </div>
+      
+      <div class="detail-item">
+        <span class="label">Passenger:</span>
+        <span class="value">{{booking.passenger}}</span>
       </div>
     </div>
+
+    <div class="action-buttons">
+      <button class="btn-secondary" (click)="downloadETicket()">
+        Download E-Ticket
+      </button>
+      <button class="btn-secondary" (click)="printConfirmation()">
+        Print Confirmation
+      </button>
+    </div>
   </div>
+
+  <div class="footer-text">
+    <p>We've sent a confirmation email to your registered email address.</p>
+    <p>If you have any questions, please contact our customer support.</p>
+  </div>
+</div>

@@ -225,8 +225,8 @@ h1 {
   border-radius: 10px;
   padding: 1.25rem;
   margin-bottom: 1.5rem;
-  width: 300px; // Set fixed width
-  height: 189px; // Perfect card ratio (1.586)
+  width: 300px;
+  height: 189px;
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.6s;
@@ -236,172 +236,107 @@ h1 {
   &.flipped {
     transform: rotateY(180deg);
   }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, 
-                rgba(255, 255, 255, 0.1), 
-                rgba(255, 255, 255, 0.05));
-    border-radius: inherit;
-  }
 }
 
 .card-front {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+  padding: 1.25rem;
+  background: inherit;
+  border-radius: inherit;
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.card-type {
-  position: absolute;
-  top: 0;
-  right: 0;
+// ... (other front card styles remain the same)
 
-  img {
-    width: 40px; // Smaller logo
-    height: 24px;
-    object-fit: contain;
-  }
-}
-
-.card-number {
-  font-size: 1.125rem; // Slightly smaller font
-  letter-spacing: 0.1em;
-  margin-top: 2.5rem;
-  font-family: monospace;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  
-  // Add dots between number groups
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-}
-
-.card-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-top: 1rem;
-  font-size: 0.75rem; // Smaller text
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  .card-name {
-    max-width: 200px; // Prevent long names from overflowing
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .card-expiry {
-    text-align: right;
-    
-    &::before {
-      content: 'Valid Thru';
-      display: block;
-      font-size: 0.625rem;
-      opacity: 0.8;
-      margin-bottom: 0.25rem;
-    }
-  }
-}
-
-// Chip and contactless symbols
-.card-chip {
-  position: absolute;
-  top: 3.5rem;
-  left: 1.25rem;
-  width: 35px;
-  height: 25px;
-  background: linear-gradient(135deg, #c4a675 0%, #e4d5aa 50%, #c4a675 100%);
-  border-radius: 4px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    height: 70%;
-    background: linear-gradient(135deg, #d4b676 0%, #f4e5ba 50%, #d4b676 100%);
-    border-radius: 2px;
-  }
-}
-
-.contactless-symbol {
-  position: absolute;
-  top: 3.5rem;
-  left: 4rem;
-  width: 20px;
-  height: 20px;
-  opacity: 0.8;
-  
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    transform-origin: center;
-  }
-  
-  &::before {
-    transform: rotate(45deg);
-  }
-  
-  &::after {
-    transform: rotate(-45deg);
-  }
-}
-
-// Back of card
 .card-back {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
-  border-radius: 10px;
+  background: inherit;
+  border-radius: inherit;
   backface-visibility: hidden;
   transform: rotateY(180deg);
-  padding: 1.25rem;
 
   .magnetic-strip {
+    position: absolute;
+    top: 1.5rem;
+    left: 0;
     width: 100%;
     height: 35px;
     background: #2d2d2d;
-    margin: 1rem 0;
+  }
+
+  .signature-strip {
+    position: absolute;
+    top: 5rem;
+    right: 1.25rem;
+    width: 85%;
+    height: 35px;
+    background: #ffffff;
+    border-radius: 4px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 0.5rem;
   }
 
   .cvv-strip {
+    position: absolute;
+    top: 5rem;
+    right: 1.25rem;
+    width: 85%;
     background: #ffffff;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    text-align: right;
+    padding: 0.5rem 0.75rem;
     border-radius: 4px;
-    
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    &::before {
+      content: 'CVV';
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      color: #6b7280;
+      margin-right: 0.5rem;
+    }
+
     .cvv {
       color: #1a1a1a;
       font-family: monospace;
       font-size: 0.875rem;
       letter-spacing: 0.1em;
+      min-width: 2.5rem;
+      text-align: right;
     }
   }
+
+  .card-info {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    font-size: 0.625rem;
+    color: white;
+    opacity: 0.8;
+    text-align: center;
+  }
+}
+
+// Add these styles for smoother flip animation
+.card-front, .card-back {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
 // Animations
