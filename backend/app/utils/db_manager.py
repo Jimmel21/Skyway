@@ -3,6 +3,7 @@ from app.models.flight import Flight
 from app.models.booking import Booking
 from app.models.passenger import Passenger
 from app.models.payment import Payment
+from app.models.airport import Airport
 from datetime import datetime, timedelta
 import uuid
 
@@ -10,9 +11,15 @@ def init_db():
     """Initialize the database and create sample data."""
     try:
         # Create all tables
-        db.create_all()
+        db.drop_all()  # Drop all existing tables
+        db.create_all()  # Create tables with new schema
         
-        # Create sample data in correct order
+        # Create sample airports first
+        if Airport.query.count() == 0:
+            create_sample_airports()
+            print("Sample airports created successfully!")
+        
+        # Create sample flights with airport references
         if Flight.query.count() == 0:
             create_sample_flights()
             print("Sample flights created successfully!")
@@ -30,14 +37,57 @@ def init_db():
         db.session.rollback()
         raise
 
+def create_sample_airports():
+    """Create sample airports."""
+    sample_airports = [
+        {
+            'code': 'JFK',
+            'city': 'New York',
+            'country': 'United States',
+            'display_name': 'New York (JFK)',
+            'is_active': True
+        },
+        {
+            'code': 'LHR',
+            'city': 'London',
+            'country': 'United Kingdom',
+            'display_name': 'London (LHR)',
+            'is_active': True
+        },
+        {
+            'code': 'CDG',
+            'city': 'Paris',
+            'country': 'France',
+            'display_name': 'Paris (CDG)',
+            'is_active': True
+        },
+        {
+            'code': 'LAX',
+            'city': 'Los Angeles',
+            'country': 'United States',
+            'display_name': 'Los Angeles (LAX)',
+            'is_active': True
+        }
+    ]
+    
+    for airport_data in sample_airports:
+        airport = Airport(**airport_data)
+        db.session.add(airport)
+    
+    db.session.commit()
+
 def create_sample_flights():
-    """Create sample flights matching Angular component data."""
+    """Create sample flights with airport references."""
+    # Get airport references
+    jfk = Airport.query.filter_by(code='JFK').first()
+    lhr = Airport.query.filter_by(code='LHR').first()
+    
     sample_flights = [
         {
             'departure_time': '08:00 AM',
             'arrival_time': '8:00 PM',
-            'origin': 'New York (JFK)',
-            'destination': 'London (LHR)',
+            'origin_id': jfk.id,
+            'destination_id': lhr.id,
             'duration': '7h 00m',
             'price': 450,
             'available_seats': 150
@@ -45,8 +95,8 @@ def create_sample_flights():
         {
             'departure_time': '12:00 PM',
             'arrival_time': '12:00 AM',
-            'origin': 'New York (JFK)',
-            'destination': 'London (LHR)',
+            'origin_id': jfk.id,
+            'destination_id': lhr.id,
             'duration': '7h 00m',
             'price': 500,
             'available_seats': 150
@@ -54,8 +104,8 @@ def create_sample_flights():
         {
             'departure_time': '04:00 PM',
             'arrival_time': '4:00 AM',
-            'origin': 'New York (JFK)',
-            'destination': 'London (LHR)',
+            'origin_id': jfk.id,
+            'destination_id': lhr.id,
             'duration': '7h 00m',
             'price': 475,
             'available_seats': 150
@@ -69,7 +119,7 @@ def create_sample_flights():
     db.session.commit()
 
 def create_sample_passengers():
-    """Create sample passenger data matching Angular component."""
+    """Create sample passenger data."""
     sample_passengers = [
         {
             'first_name': 'John',
@@ -114,7 +164,7 @@ def create_sample_bookings():
             # Create payment
             payment = Payment(
                 booking_id=booking.id,
-                card_number='4111111111111111',  # Sample card number (never store real ones!)
+                card_number='4111111111111111',  # Sample card number
                 expiry_date='12/25',
                 name_on_card=f"{passenger.first_name} {passenger.last_name}"
             )
@@ -125,73 +175,30 @@ def create_sample_bookings():
     
     db.session.commit()
 
-def reset_db():
-    """Reset the database by dropping all tables and recreating them."""
-    db.drop_all()
-    init_db()
-
 def get_db_stats():
     """Get comprehensive database statistics."""
     try:
         # Get basic counts
+        airport_count = Airport.query.count()
         flight_count = Flight.query.count()
-        upcoming_flights = Flight.query.filter(Flight.departure_time > datetime.now()).count()
         passenger_count = Passenger.query.count()
         booking_count = Booking.query.count()
         payment_count = Payment.query.count()
         
         # Get unique routes
         unique_routes = db.session.query(
-            db.distinct(Flight.origin), 
-            Flight.destination
-        ).count()
-        
-        # Get most popular route
-        popular_route = db.session.query(
-            Flight.origin,
-            Flight.destination,
-            db.func.count(Booking.id).label('booking_count')
-        ).join(Booking).group_by(
-            Flight.origin,
-            Flight.destination
-        ).order_by(
-            db.desc('booking_count')
-        ).first()
-        
-        # Get booking statistics
-        total_revenue = db.session.query(
-            db.func.sum(Flight.price)
-        ).join(Booking).scalar() or 0
-        
-        avg_booking_value = db.session.query(
-            db.func.avg(Flight.price)
-        ).join(Booking).scalar() or 0
-        
-        # Get seat availability
-        avg_seats_available = db.session.query(
-            db.func.avg(Flight.available_seats)
-        ).scalar() or 0
+            Flight.origin_id, 
+            Flight.destination_id
+        ).distinct().count()
         
         stats = {
             'overview': {
+                'total_airports': airport_count,
                 'total_flights': flight_count,
-                'upcoming_flights': upcoming_flights,
                 'total_passengers': passenger_count,
                 'total_bookings': booking_count,
-                'total_payments': payment_count
-            },
-            'routes': {
-                'unique_routes': unique_routes,
-                'most_popular': {
-                    'origin': popular_route[0] if popular_route else None,
-                    'destination': popular_route[1] if popular_route else None,
-                    'bookings': popular_route[2] if popular_route else 0
-                } if popular_route else None
-            },
-            'bookings': {
-                'total_revenue': round(total_revenue, 2),
-                'average_booking_value': round(avg_booking_value, 2),
-                'average_seats_available': round(avg_seats_available, 2)
+                'total_payments': payment_count,
+                'unique_routes': unique_routes
             }
         }
         
