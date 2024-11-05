@@ -1,136 +1,106 @@
-<div class="search-container p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md">
+<div class="search-container">
     <!-- Trip Type Selection -->
-    <div class="trip-types mb-6 flex gap-4 border-b pb-4">
+    <div class="trip-types">
       <button 
         (click)="onTripTypeChange('roundtrip')"
-        [ngClass]="{'bg-red-600 text-white': tripType === 'roundtrip', 'bg-gray-100': tripType !== 'roundtrip'}"
-        class="px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-500 hover:text-white"
+        [class.active]="tripType === 'roundtrip'"
+        class="trip-button"
       >
         Roundtrip
       </button>
       <button 
         (click)="onTripTypeChange('oneway')"
-        [ngClass]="{'bg-red-600 text-white': tripType === 'oneway', 'bg-gray-100': tripType !== 'oneway'}"
-        class="px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-500 hover:text-white"
+        [class.active]="tripType === 'oneway'"
+        class="trip-button"
       >
         One Way
       </button>
       <button 
         (click)="onTripTypeChange('recent')"
-        [ngClass]="{'bg-red-600 text-white': tripType === 'recent', 'bg-gray-100': tripType !== 'recent'}"
-        class="px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-500 hover:text-white"
+        [class.active]="tripType === 'recent'"
+        class="trip-button"
       >
         Recent Searches
       </button>
     </div>
   
-    <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="space-y-6">
-      <!-- Origin and Destination Row -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Origin Airport -->
-        <mat-form-field class="w-full" appearance="outline">
-          <mat-label>From</mat-label>
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+      <!-- First Row: Origin and Destination -->
+      <div class="location-row">
+        <mat-form-field appearance="outline" class="location-field">
           <input 
             matInput
             formControlName="from"
             [matAutocomplete]="originAuto"
-            placeholder="Search cities or airports"
+            placeholder="From"
           >
           <mat-autocomplete #originAuto="matAutocomplete" [displayWith]="displayFn">
             <mat-option *ngFor="let airport of (filteredOrigins | async)" [value]="airport">
-              <div class="flex flex-col">
-                <span class="text-base">{{airport.display_name}}</span>
-                <small class="text-gray-500">{{airport.country}}</small>
+              <div class="airport-option">
+                <span>{{airport.display_name}}</span>
+                <small>{{airport.country}}</small>
               </div>
             </mat-option>
           </mat-autocomplete>
-          <mat-error *ngIf="searchForm.get('from')?.errors?.['required']">
-            Please select a departure airport
-          </mat-error>
         </mat-form-field>
   
-        <!-- Destination Airport -->
-        <mat-form-field class="w-full" appearance="outline">
-          <mat-label>To</mat-label>
+        <mat-form-field appearance="outline" class="location-field">
           <input 
             matInput
             formControlName="to"
             [matAutocomplete]="destAuto"
-            placeholder="Search cities or airports"
+            placeholder="To"
           >
           <mat-autocomplete #destAuto="matAutocomplete" [displayWith]="displayFn">
             <mat-option *ngFor="let airport of (filteredDestinations | async)" [value]="airport">
-              <div class="flex flex-col">
-                <span class="text-base">{{airport.display_name}}</span>
-                <small class="text-gray-500">{{airport.country}}</small>
+              <div class="airport-option">
+                <span>{{airport.display_name}}</span>
+                <small>{{airport.country}}</small>
               </div>
             </mat-option>
           </mat-autocomplete>
-          <mat-error *ngIf="searchForm.get('to')?.errors?.['required']">
-            Please select a destination airport
-          </mat-error>
-          <mat-error *ngIf="searchForm.get('to')?.errors?.['sameAirport']">
-            Destination must be different from origin
-          </mat-error>
         </mat-form-field>
       </div>
   
-      <!-- Dates and Passengers Row -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Departure Date -->
-        <mat-form-field appearance="outline">
-          <mat-label>Departure Date</mat-label>
-          <input 
-            matInput 
-            [matDatepicker]="departurePicker"
-            formControlName="departDate"
-            placeholder="Choose a date"
-          >
-          <mat-datepicker-toggle matSuffix [for]="departurePicker"></mat-datepicker-toggle>
-          <mat-datepicker #departurePicker></mat-datepicker>
-          <mat-error *ngIf="searchForm.get('departDate')?.errors?.['required']">
-            Please select a departure date
-          </mat-error>
-        </mat-form-field>
-  
-        <!-- Return Date -->
-        <mat-form-field appearance="outline" *ngIf="tripType === 'roundtrip'">
-          <mat-label>Return Date</mat-label>
-          <input 
-            matInput 
-            [matDatepicker]="returnPicker"
-            formControlName="returnDate"
-            placeholder="Choose a date"
-          >
-          <mat-datepicker-toggle matSuffix [for]="returnPicker"></mat-datepicker-toggle>
-          <mat-datepicker #returnPicker></mat-datepicker>
-          <mat-error *ngIf="searchForm.get('returnDate')?.errors?.['required']">
-            Please select a return date
-          </mat-error>
-        </mat-form-field>
-  
-        <!-- Passengers -->
-        <mat-form-field appearance="outline">
-          <mat-label>Passengers</mat-label>
-          <mat-select formControlName="guests">
+      <!-- Second Row: Dates, Passengers, and Search -->
+      <div class="details-row">
+        <mat-form-field appearance="outline" class="guests-field">
+          <mat-select formControlName="guests" placeholder="1 Guest">
             <mat-option value="1 Guest">1 Guest</mat-option>
             <mat-option value="2 Guests">2 Guests</mat-option>
             <mat-option value="3 Guests">3 Guests</mat-option>
             <mat-option value="4 Guests">4 Guests</mat-option>
           </mat-select>
         </mat-form-field>
-      </div>
   
-      <!-- Search Button -->
-      <div class="flex justify-end">
+        <mat-form-field appearance="outline" class="date-field">
+          <input 
+            matInput 
+            [matDatepicker]="departurePicker"
+            formControlName="departDate"
+            placeholder="Depart Date"
+          >
+          <mat-datepicker-toggle matSuffix [for]="departurePicker"></mat-datepicker-toggle>
+          <mat-datepicker #departurePicker></mat-datepicker>
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" class="date-field" *ngIf="tripType === 'roundtrip'">
+          <input 
+            matInput 
+            [matDatepicker]="returnPicker"
+            formControlName="returnDate"
+            placeholder="Return Date"
+          >
+          <mat-datepicker-toggle matSuffix [for]="returnPicker"></mat-datepicker-toggle>
+          <mat-datepicker #returnPicker></mat-datepicker>
+        </mat-form-field>
+  
         <button 
-          mat-raised-button 
-          color="primary"
           type="submit"
+          class="search-button"
           [disabled]="!searchForm.valid"
-          class="px-8 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200"
         >
-          Search Flights
+          Search
         </button>
       </div>
     </form>

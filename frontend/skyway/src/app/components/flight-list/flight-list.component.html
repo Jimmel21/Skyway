@@ -1,71 +1,186 @@
-<div class="flight-results-container">
-  <!-- <nav class="navbar">
-    <div class="logo">SkyWay</div>
-    <div class="nav-links">
-      <a href="#" class="nav-link">Search</a>
-      <a href="#" class="nav-link">My Trips</a>
-    </div>
-  </nav> -->
-
-  <div class="results-content">
-    <div class="results-header">
-      <div class="header-main">
-        <h1>Flight Results</h1>
-        <button class="filter-btn">Filter</button>
+<div class="flight-results-container p-6 max-w-7xl mx-auto">
+  <div class="results-content space-y-6">
+    <!-- Header Section -->
+    <div class="results-header space-y-4">
+      <div class="header-main flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Flight Results</h1>
+        <button mat-button class="filter-button flex items-center gap-2">
+          <mat-icon>filter_list</mat-icon>
+          Filter
+        </button>
       </div>
 
-      <div class="search-summary">
+      <div class="search-summary flex justify-between items-center bg-gray-50 p-4 rounded-lg">
         <div class="route-info">
-          <h2>{{searchDetails.origin}} to {{searchDetails.destination}}</h2>
-          <p>{{searchDetails.date}} | {{searchDetails.passengers}} Adult</p>
+          <h2 class="text-lg font-semibold">
+            {{searchDetails?.departure_city}} to {{searchDetails?.arrival_city}}
+          </h2>
+          <p class="text-gray-600">
+            {{formatDate(searchDetails?.date || '')}} | 
+            {{searchDetails?.passengers}} {{searchDetails?.passengers === 1 ? 'Adult' : 'Adults'}}
+            <span *ngIf="searchDetails?.tripType === 'roundtrip'">
+              | Return: {{formatDate(searchDetails?.return_date || '')}}
+            </span>
+          </p>
         </div>
-        <button class="change-btn" (click)="changeSearch()">Change</button>
+        <button 
+          mat-button 
+          color="primary" 
+          routerLink="/"
+          class="change-button"
+        >
+          Change
+        </button>
       </div>
 
-      <div class="sort-options">
-        <div class="sort-button" 
-             [class.active]="selectedSort === 'cheapest'"
-             (click)="sortFlights('cheapest')">
+      <!-- Loading Spinner -->
+      <div *ngIf="loading" class="flex justify-center py-8">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
+        {{error}}
+      </div>
+
+      <!-- Sort Options -->
+      <div *ngIf="!noFlightsFound && !loading" class="sort-options flex gap-4">
+        <button 
+          mat-button
+          [class.bg-red-600]="selectedSort === 'cheapest'"
+          [class.text-white]="selectedSort === 'cheapest'"
+          class="sort-button px-4 py-2 rounded-md transition-colors"
+          (click)="sortFlights('cheapest')"
+        >
           Cheapest
-        </div>
-        <div class="sort-button" 
-             [class.active]="selectedSort === 'fastest'"
-             (click)="sortFlights('fastest')">
+        </button>
+        <button 
+          mat-button
+          [class.bg-red-600]="selectedSort === 'fastest'"
+          [class.text-white]="selectedSort === 'fastest'"
+          class="sort-button px-4 py-2 rounded-md transition-colors"
+          (click)="sortFlights('fastest')"
+        >
           Fastest
-        </div>
-        <div class="sort-button" 
-             [class.active]="selectedSort === 'best'"
-             (click)="sortFlights('best')">
+        </button>
+        <button 
+          mat-button
+          [class.bg-red-600]="selectedSort === 'best'"
+          [class.text-white]="selectedSort === 'best'"
+          class="sort-button px-4 py-2 rounded-md transition-colors"
+          (click)="sortFlights('best')"
+        >
           Best Value
-        </div>
+        </button>
       </div>
     </div>
 
-    <div class="flights-list">
-      <div class="flight-card" *ngFor="let flight of flights">
-        <div class="flight-details">
-          <div class="time-info">
-            <span class="time">{{flight.departureTime}} - {{flight.arrivalTime}}</span>
-          </div>
-          <div class="route-info">
-            <span>{{flight.origin}} - {{flight.destination}}</span>
-          </div>
-          <div class="duration">
-            <span>{{flight.duration}}</span>
-          </div>
+    <!-- Flight Lists -->
+    <ng-container *ngIf="!loading">
+      <!-- No Results Message -->
+      <div *ngIf="noFlightsFound" class="text-center py-12">
+        <div class="mb-4">
+          <mat-icon class="text-gray-400 text-6xl">flight_off</mat-icon>
         </div>
+        <h2 class="text-xl font-semibold mb-2">No Flights Found</h2>
+        <p class="text-gray-600 mb-4">We couldn't find any flights matching your search criteria.</p>
+        <button mat-raised-button color="primary" routerLink="/">Change Search</button>
+      </div>
+
+      <!-- Outbound Flights -->
+      <div *ngIf="flights.length > 0" class="flights-section">
+        <h3 *ngIf="searchDetails?.tripType === 'roundtrip'" class="text-lg font-semibold mb-4">
+          Outbound Flights
+        </h3>
         
-        <div class="price-section">
-          <span class="price">${{flight.price}}</span>
-          <button class="select-btn" (click)="selectFlight(flight)">Select</button>
+        <div class="flights-list space-y-4">
+          <div *ngFor="let flight of flights" 
+               class="flight-card bg-white p-6 rounded-lg shadow-sm border hover:border-red-200 transition-all">
+            <div class="grid grid-cols-12 gap-4 items-center">
+              <div class="col-span-8">
+                <div class="flight-details">
+                  <div class="flex items-center gap-8">
+                    <div class="time-info">
+                      <span class="text-xl font-semibold">{{formatTime(flight.departureTime)}}</span>
+                      <span class="text-gray-400 mx-2">-</span>
+                      <span class="text-xl font-semibold">{{formatTime(flight.arrivalTime)}}</span>
+                    </div>
+                    <div class="duration text-gray-500">
+                      {{formatDuration(flight.duration)}}
+                    </div>
+                  </div>
+                  <div class="route-info text-gray-600 mt-2">
+                    {{flight.origin}} - {{flight.destination}}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-span-4 flex flex-col items-end justify-between">
+                <div class="text-right">
+                  <div class="text-2xl font-bold text-red-600">${{flight.price}}</div>
+                  <div class="text-sm text-gray-500">{{getSeatsMessage(flight.availableSeats)}}</div>
+                </div>
+                <button 
+                  mat-raised-button 
+                  color="primary"
+                  [disabled]="flight.availableSeats === 0"
+                  (click)="selectFlight(flight)"
+                  class="mt-4"
+                >
+                  Select
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="load-more">
-      <button class="load-more-btn" (click)="loadMore()">
-        Load More Results
-      </button>
-    </div>
+      <!-- Return Flights -->
+      <div *ngIf="returnFlights.length > 0" class="flights-section mt-8">
+        <h3 class="text-lg font-semibold mb-4">Return Flights</h3>
+        
+        <div class="flights-list space-y-4">
+          <div *ngFor="let flight of returnFlights" 
+               class="flight-card bg-white p-6 rounded-lg shadow-sm border hover:border-red-200 transition-all">
+            <!-- Same structure as outbound flights -->
+            <div class="grid grid-cols-12 gap-4 items-center">
+              <div class="col-span-8">
+                <div class="flight-details">
+                  <div class="flex items-center gap-8">
+                    <div class="time-info">
+                      <span class="text-xl font-semibold">{{formatTime(flight.departureTime)}}</span>
+                      <span class="text-gray-400 mx-2">-</span>
+                      <span class="text-xl font-semibold">{{formatTime(flight.arrivalTime)}}</span>
+                    </div>
+                    <div class="duration text-gray-500">
+                      {{formatDuration(flight.duration)}}
+                    </div>
+                  </div>
+                  <div class="route-info text-gray-600 mt-2">
+                    {{flight.origin}} - {{flight.destination}}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-span-4 flex flex-col items-end justify-between">
+                <div class="text-right">
+                  <div class="text-2xl font-bold text-red-600">${{flight.price}}</div>
+                  <div class="text-sm text-gray-500">{{getSeatsMessage(flight.availableSeats)}}</div>
+                </div>
+                <button 
+                  mat-raised-button 
+                  color="primary"
+                  [disabled]="flight.availableSeats === 0"
+                  (click)="selectFlight(flight, true)"
+                  class="mt-4"
+                >
+                  Select
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
   </div>
 </div>

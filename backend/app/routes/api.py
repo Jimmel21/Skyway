@@ -47,7 +47,7 @@ def search_flights():
         flights = Flight.query.filter(
             Flight.origin_id == data['origin_id'],
             Flight.destination_id == data['destination_id'],
-            Flight.departure_time.like(f"%{data['date']}%"),
+            Flight.departure_date.like(f"%{data['date']}%"),
             Flight.available_seats > 0
         ).all()
         
