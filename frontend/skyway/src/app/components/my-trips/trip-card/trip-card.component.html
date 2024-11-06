@@ -1,34 +1,66 @@
-<div class="trip-card" [class.upcoming]="isUpcoming" [class.expanded]="expanded">
+<div class="trip-card" [class.expanded]="expanded" [class.upcoming]="isUpcoming">
     <div class="card-header">
       <div class="trip-info">
-        <div class="booking-reference">Booking Reference: {{trip.reference}}</div>
-        <div class="route">{{trip.flight.departure_city}} → {{trip.flight.arrival_city}}</div>
-        <div class="date">{{formatDate(trip.flight.departure_time)}}</div>
-      </div>
-      <div class="mat-mdc-chip-set">
-        <div class="mat-mdc-chip" [class.primary]="getStatusColor() === 'primary'"
-                                 [class.warn]="getStatusColor() === 'warn'">
-          {{trip.status}}
+        <div class="booking-reference">
+          Booking Reference: {{trip.reference}}
         </div>
+        <div class="route">
+          {{trip.flight.departure_city}} → {{trip.flight.arrival_city}}
+        </div>
+        <div class="schedule">
+          <span class="departure">
+            {{formatDate(trip.flight.departure_time)}} at {{formatTime(trip.flight.departure_time)}}
+          </span>
+          <span class="duration">
+            {{getTripDuration()}}
+          </span>
+        </div>
+      </div>
+      
+      <div class="status-container">
+        <mat-chip-set>
+          <mat-chip [class]="getStatusClass()">
+            {{trip.status}}
+          </mat-chip>
+        </mat-chip-set>
       </div>
     </div>
     
-    <div class="card-details" *ngIf="expanded">
-      <div class="details-grid">
-        <div class="detail-section">
-          <h4>Passenger Details</h4>
-          <div class="detail-content">
-            <div>{{trip.passenger.name}}</div>
-            <div>{{trip.passenger.email}}</div>
+    @if (expanded) {
+      <div class="card-details">
+        <div class="details-grid">
+          <div class="detail-section">
+            <h4>Passenger Details</h4>
+            <div class="detail-content">
+              <p class="passenger-name">{{trip.passenger.name}}</p>
+              <p class="passenger-email">{{trip.passenger.email}}</p>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h4>Flight Details</h4>
+            <div class="detail-content">
+              <div class="flight-time">
+                <p class="label">Departure</p>
+                <p>{{formatTime(trip.flight.departure_time)}}</p>
+                <p class="date">{{formatDate(trip.flight.departure_time)}}</p>
+              </div>
+              <div class="flight-time">
+                <p class="label">Arrival</p>
+                <p>{{formatTime(trip.flight.arrival_time)}}</p>
+                <p class="date">{{formatDate(trip.flight.arrival_time)}}</p>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="detail-section">
-          <h4>Flight Details</h4>
-          <div class="detail-content">
-            <div>Departure: {{formatTime(trip.flight.departure_time)}}</div>
-            <div>Arrival: {{formatTime(trip.flight.arrival_time)}}</div>
+        
+        @if (isCheckInAvailable()) {
+          <div class="check-in-section">
+            <button mat-raised-button color="primary">
+              Check In Now
+            </button>
           </div>
-        </div>
+        }
       </div>
-    </div>
+    }
   </div>

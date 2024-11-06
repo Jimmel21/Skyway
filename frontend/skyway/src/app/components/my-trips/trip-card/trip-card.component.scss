@@ -1,96 +1,141 @@
 .trip-card {
-    background: white;
+    background-color: white;
     border-radius: 0.5rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
     transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    border-left: 4px solid transparent;
-  
-    &.upcoming {
-      border-left-color: #059669;
-    }
-  
-    &:not(.upcoming) {
-      border-left-color: #9CA3AF;
-    }
+    border: 1px solid #E5E7EB;
   
     &:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
-  }
   
-  .card-header {
-    padding: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  
-  .trip-info {
-    .booking-reference {
-      font-size: 0.875rem;
-      color: #6B7280;
-      margin-bottom: 0.25rem;
+    &.upcoming {
+      border-left: 4px solid #DC2626;
     }
   
-    .route {
-      font-size: 1.125rem;
-      font-weight: 500;
-      color: #111827;
-      margin-bottom: 0.25rem;
-    }
+    .card-header {
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
   
-    .date {
-      color: #4B5563;
-      font-size: 0.875rem;
-    }
-  }
+      .trip-info {
+        flex: 1;
   
-  .mat-mdc-chip {
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 0.875rem;
-    font-weight: 500;
+        .booking-reference {
+          font-size: 0.875rem;
+          color: #6B7280;
+          margin-bottom: 0.5rem;
+        }
   
-    &.primary {
-      background-color: #E0F2F1;
-      color: #00796B;
-    }
+        .route {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: #1F2937;
+          margin-bottom: 0.5rem;
+        }
   
-    &.warn {
-      background-color: #FFEBEE;
-      color: #C62828;
-    }
-  }
+        .schedule {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          color: #4B5563;
+          font-size: 0.875rem;
   
-  .card-details {
-    padding: 0 1.5rem 1.5rem;
-    border-top: 1px solid #E5E7EB;
-    margin-top: 0.5rem;
-  
-    .details-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      padding-top: 1rem;
-    }
-  
-    .detail-section {
-      h4 {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #374151;
-        margin-bottom: 0.5rem;
+          .duration {
+            color: #6B7280;
+            &:before {
+              content: '•';
+              margin-right: 1rem;
+            }
+          }
+        }
       }
   
-      .detail-content {
-        font-size: 0.875rem;
-        color: #6B7280;
-        
-        > div {
-          margin-bottom: 0.25rem;
+      .status-container {
+        ::ng-deep {
+          .mat-mdc-chip {
+            &.status-confirmed {
+              background-color: #DCFCE7;
+              color: #059669;
+            }
+            
+            &.status-cancelled {
+              background-color: #FEE2E2;
+              color: #DC2626;
+            }
+            
+            &.status-completed {
+              background-color: #E5E7EB;
+              color: #4B5563;
+            }
+          }
         }
+      }
+    }
+  
+    .card-details {
+      border-top: 1px solid #E5E7EB;
+      background-color: #F9FAFB;
+      padding: 1rem;
+  
+      .details-grid {
+        display: grid;
+        gap: 2rem;
+        
+        @media (min-width: 640px) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+  
+      .detail-section {
+        h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #4B5563;
+          margin-bottom: 0.75rem;
+        }
+  
+        .detail-content {
+          color: #1F2937;
+  
+          .passenger-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+          }
+  
+          .passenger-email {
+            color: #6B7280;
+            font-size: 0.875rem;
+          }
+  
+          .flight-time {
+            margin-bottom: 1rem;
+  
+            .label {
+              font-size: 0.75rem;
+              text-transform: uppercase;
+              color: #6B7280;
+              margin-bottom: 0.25rem;
+            }
+  
+            .date {
+              font-size: 0.875rem;
+              color: #6B7280;
+            }
+          }
+        }
+      }
+  
+      .check-in-section {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #E5E7EB;
+        display: flex;
+        justify-content: center;
       }
     }
   }

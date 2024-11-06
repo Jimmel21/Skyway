@@ -69,19 +69,19 @@
         grid-template-columns: 1fr 1fr;
       }
     }
-    
+  
     // Material form field customization
     ::ng-deep .mat-mdc-form-field {
       width: 100%;
-      
+  
       .mat-mdc-form-field-flex {
         background-color: white;
       }
-      
+  
       .mdc-text-field--outlined {
         --mdc-theme-primary: #DC2626;
       }
-      
+  
       .mat-mdc-form-field-error {
         color: #DC2626;
       }
@@ -91,22 +91,37 @@
   .form-actions {
     display: flex;
     justify-content: center;
+    gap: 1rem;
     margin-top: 2rem;
   
     button.mat-mdc-raised-button {
-      padding: 0 2rem;
+      min-width: 120px;
       height: 48px;
       font-weight: 500;
-      
+  
       &.mat-primary {
         background-color: #DC2626;
-        
+  
         &:hover {
           background-color: #B91C1C;
         }
-        
+  
         &:disabled {
           background-color: rgba(220, 38, 38, 0.12);
+          color: rgba(0, 0, 0, 0.38);
+        }
+      }
+  
+      &:not(.mat-primary) {
+        background-color: #F3F4F6;
+        color: #4B5563;
+  
+        &:hover {
+          background-color: #E5E7EB;
+        }
+  
+        &:active {
+          background-color: #D1D5DB;
         }
       }
     }
@@ -189,7 +204,7 @@
   
   // Material button overrides
   ::ng-deep {
-    .mat-mdc-button, 
+    .mat-mdc-button,
     .mat-mdc-raised-button,
     .mat-mdc-outlined-button {
       &.mat-primary {

@@ -1,20 +1,20 @@
 <div class="my-trips-container">
     <div class="content-wrapper">
-      <h1 class="text-2xl font-bold mb-6">My Trips</h1>
+      <h1 class="page-title">My Trips</h1>
       
       <!-- Search Form -->
-      <div class="search-form-container mb-8">
-        <form [formGroup]="searchForm" (ngSubmit)="searchTrips()" class="space-y-6">
-          <div class="flex gap-4 mb-4">
+      <div class="search-form-container">
+        <form [formGroup]="searchForm" (ngSubmit)="searchTrips()" class="search-form">
+          <div class="search-options">
             <button type="button" 
-                    class="px-4 py-2 rounded-lg"
-                    [ngClass]="{'bg-red-600 text-white': searchMode === 'reference', 'bg-gray-100': searchMode !== 'reference'}"
+                    mat-stroked-button
+                    [class.active]="searchMode === 'reference'"
                     (click)="switchMode('reference')">
               Search by Booking Reference
             </button>
             <button type="button" 
-                    class="px-4 py-2 rounded-lg"
-                    [ngClass]="{'bg-red-600 text-white': searchMode === 'email', 'bg-gray-100': searchMode !== 'email'}"
+                    mat-stroked-button
+                    [class.active]="searchMode === 'email'"
                     (click)="switchMode('email')">
               Search by Email
             </button>
@@ -23,26 +23,24 @@
           <!-- Booking Reference Search -->
           @if (searchMode === 'reference') {
             <div class="form-section">
-              <div class="mb-4">
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Booking Reference</mat-label>
-                  <input matInput 
-                         formControlName="bookingReference" 
-                         placeholder="e.g., SKY123456">
-                  @if (searchForm.get('bookingReference')?.errors?.['pattern']) {
-                    <mat-error>
-                      Please enter a valid booking reference (SKY followed by 6 characters)
-                    </mat-error>
-                  }
-                </mat-form-field>
-              </div>
+              <mat-form-field appearance="outline">
+                <mat-label>Booking Reference</mat-label>
+                <input matInput 
+                       formControlName="bookingReference" 
+                       placeholder="e.g., SKY123456">
+                @if (searchForm.get('bookingReference')?.errors?.['pattern']) {
+                  <mat-error>
+                    Please enter a valid booking reference (SKY followed by 6 characters)
+                  </mat-error>
+                }
+              </mat-form-field>
             </div>
           }
   
           <!-- Email Search -->
           @if (searchMode === 'email') {
-            <div class="form-section space-y-4">
-              <mat-form-field appearance="outline" class="w-full">
+            <div class="form-section">
+              <mat-form-field appearance="outline">
                 <mat-label>Email</mat-label>
                 <input matInput 
                        formControlName="email" 
@@ -54,7 +52,7 @@
                 }
               </mat-form-field>
   
-              <mat-form-field appearance="outline" class="w-full">
+              <mat-form-field appearance="outline">
                 <mat-label>Last Name</mat-label>
                 <input matInput 
                        formControlName="lastName" 
@@ -68,50 +66,57 @@
             </div>
           }
   
-          <div class="flex justify-center">
-            <button mat-flat-button 
+          <div class="form-actions">
+            <button mat-raised-button 
                     color="primary"
                     type="submit"
-                    [disabled]="!isFormValid()"
-                    class="px-8 py-2">
+                    [disabled]="!isFormValid()">
               Search Trips
             </button>
+            <!-- @if (trips.length > 0) { -->
+                <button mat-raised-button
+                        color="basic"
+                        type="button"
+                        (click)="clearSearch()">
+                  Clear Search
+                </button>
+            <!-- } -->
           </div>
         </form>
       </div>
   
       <!-- Error Message -->
       @if (error) {
-        <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
+        <div class="error-message">
           {{ error }}
         </div>
       }
   
       <!-- Loading State -->
       @if (isLoading) {
-        <div class="flex flex-col items-center gap-4 py-8">
+        <div class="loading-state">
           <mat-spinner diameter="40"></mat-spinner>
-          <p class="text-gray-600">Searching for your trips...</p>
+          <p>Searching for your trips...</p>
         </div>
       }
   
       <!-- Results Section -->
       @if (trips.length > 0) {
-        <div class="space-y-8">
-          <h2 class="text-xl font-semibold">Your Trips</h2>
+        <div class="results-section">
+          <h2 class="section-title">Your Trips</h2>
   
           <!-- Current/Future Trips -->
-          @if (getCurrentTrips().length > 0) {
-            <div class="space-y-4">
-              <h3 class="text-lg font-medium text-gray-700">Upcoming Trips</h3>
-              <div class="space-y-4">
+          @defer (when getCurrentTrips().length > 0) {
+            <div class="trips-section">
+              <h3 class="subsection-title">Upcoming Trips</h3>
+              <div class="trips-list">
                 @for (trip of getCurrentTrips(); track trip.reference) {
                   <app-trip-card 
                     [trip]="trip"
                     [expanded]="selectedTrip?.reference === trip.reference"
                     [isUpcoming]="true"
                     (click)="toggleTripDetails(trip)"
-                    class="block transition-all hover:shadow-md">
+                    class="trip-card-wrapper upcoming">
                   </app-trip-card>
                 }
               </div>
@@ -119,17 +124,17 @@
           }
   
           <!-- Past Trips -->
-          @if (getPastTrips().length > 0) {
-            <div class="space-y-4">
-              <h3 class="text-lg font-medium text-gray-700">Past Trips</h3>
-              <div class="space-y-4">
+          @defer (when getPastTrips().length > 0) {
+            <div class="trips-section">
+              <h3 class="subsection-title">Past Trips</h3>
+              <div class="trips-list">
                 @for (trip of getPastTrips(); track trip.reference) {
                   <app-trip-card 
                     [trip]="trip"
                     [expanded]="selectedTrip?.reference === trip.reference"
                     [isUpcoming]="false"
                     (click)="toggleTripDetails(trip)"
-                    class="block transition-all hover:shadow-md">
+                    class="trip-card-wrapper past">
                   </app-trip-card>
                 }
               </div>
