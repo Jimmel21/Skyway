@@ -1,19 +1,14 @@
+<!-- flight-list.component.html -->
 <div class="flight-results-container p-6 max-w-7xl mx-auto">
   <div class="results-content space-y-6">
     <!-- Header Section -->
     <div class="results-header space-y-4">
-      <div class="header-main flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Flight Results</h1>
-        <button mat-button class="filter-button flex items-center gap-2">
-          <mat-icon>filter_list</mat-icon>
-          Filter
-        </button>
-      </div>
+      <!-- ... header content ... -->
 
       <div class="search-summary flex justify-between items-center bg-gray-50 p-4 rounded-lg">
         <div class="route-info">
           <h2 class="text-lg font-semibold">
-            {{searchDetails?.departure_city}} to {{searchDetails?.arrival_city}}
+            {{searchDetails?.originName}} to {{searchDetails?.destinationName}}
           </h2>
           <p class="text-gray-600">
             {{formatDate(searchDetails?.date || '')}} | 
@@ -23,62 +18,30 @@
             </span>
           </p>
         </div>
-        <button 
-          mat-button 
-          color="primary" 
-          routerLink="/"
-          class="change-button"
-        >
+        <button mat-button class="change-button" routerLink="/">
           Change
         </button>
       </div>
 
-      <!-- Loading Spinner -->
+      <!-- Loading and Error States -->
       <div *ngIf="loading" class="flex justify-center py-8">
         <mat-spinner diameter="40"></mat-spinner>
       </div>
 
-      <!-- Error Message -->
       <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
         {{error}}
       </div>
 
       <!-- Sort Options -->
       <div *ngIf="!noFlightsFound && !loading" class="sort-options flex gap-4">
-        <button 
-          mat-button
-          [class.bg-red-600]="selectedSort === 'cheapest'"
-          [class.text-white]="selectedSort === 'cheapest'"
-          class="sort-button px-4 py-2 rounded-md transition-colors"
-          (click)="sortFlights('cheapest')"
-        >
-          Cheapest
-        </button>
-        <button 
-          mat-button
-          [class.bg-red-600]="selectedSort === 'fastest'"
-          [class.text-white]="selectedSort === 'fastest'"
-          class="sort-button px-4 py-2 rounded-md transition-colors"
-          (click)="sortFlights('fastest')"
-        >
-          Fastest
-        </button>
-        <button 
-          mat-button
-          [class.bg-red-600]="selectedSort === 'best'"
-          [class.text-white]="selectedSort === 'best'"
-          class="sort-button px-4 py-2 rounded-md transition-colors"
-          (click)="sortFlights('best')"
-        >
-          Best Value
-        </button>
+        <!-- ... sort buttons ... -->
       </div>
     </div>
 
     <!-- Flight Lists -->
     <ng-container *ngIf="!loading">
       <!-- No Results Message -->
-      <div *ngIf="noFlightsFound" class="text-center py-12">
+      <div *ngIf="flights.length === 0" class="text-center py-12">
         <div class="mb-4">
           <mat-icon class="text-gray-400 text-6xl">flight_off</mat-icon>
         </div>
@@ -97,16 +60,17 @@
           <div *ngFor="let flight of flights" 
                class="flight-card bg-white p-6 rounded-lg shadow-sm border hover:border-red-200 transition-all">
             <div class="grid grid-cols-12 gap-4 items-center">
+              <!-- Flight Details -->
               <div class="col-span-8">
                 <div class="flight-details">
                   <div class="flex items-center gap-8">
                     <div class="time-info">
-                      <span class="text-xl font-semibold">{{formatTime(flight.departureTime)}}</span>
+                      <span class="text-xl font-semibold">{{flight.departureTime}}</span>
                       <span class="text-gray-400 mx-2">-</span>
-                      <span class="text-xl font-semibold">{{formatTime(flight.arrivalTime)}}</span>
+                      <span class="text-xl font-semibold">{{flight.arrivalTime}}</span>
                     </div>
                     <div class="duration text-gray-500">
-                      {{formatDuration(flight.duration)}}
+                      {{flight.duration}}
                     </div>
                   </div>
                   <div class="route-info text-gray-600 mt-2">
@@ -115,17 +79,17 @@
                 </div>
               </div>
               
+              <!-- Price and Select Button -->
               <div class="col-span-4 flex flex-col items-end justify-between">
                 <div class="text-right">
                   <div class="text-2xl font-bold text-red-600">${{flight.price}}</div>
                   <div class="text-sm text-gray-500">{{getSeatsMessage(flight.availableSeats)}}</div>
                 </div>
                 <button 
-                  mat-raised-button 
-                  color="primary"
+                  mat-raised-button
+                  class="select-button w-full"
                   [disabled]="flight.availableSeats === 0"
                   (click)="selectFlight(flight)"
-                  class="mt-4"
                 >
                   Select
                 </button>
@@ -142,18 +106,18 @@
         <div class="flights-list space-y-4">
           <div *ngFor="let flight of returnFlights" 
                class="flight-card bg-white p-6 rounded-lg shadow-sm border hover:border-red-200 transition-all">
-            <!-- Same structure as outbound flights -->
             <div class="grid grid-cols-12 gap-4 items-center">
+              <!-- Flight Details -->
               <div class="col-span-8">
                 <div class="flight-details">
                   <div class="flex items-center gap-8">
                     <div class="time-info">
-                      <span class="text-xl font-semibold">{{formatTime(flight.departureTime)}}</span>
+                      <span class="text-xl font-semibold">{{flight.departureTime}}</span>
                       <span class="text-gray-400 mx-2">-</span>
-                      <span class="text-xl font-semibold">{{formatTime(flight.arrivalTime)}}</span>
+                      <span class="text-xl font-semibold">{{flight.arrivalTime}}</span>
                     </div>
                     <div class="duration text-gray-500">
-                      {{formatDuration(flight.duration)}}
+                      {{flight.duration}}
                     </div>
                   </div>
                   <div class="route-info text-gray-600 mt-2">
@@ -162,17 +126,17 @@
                 </div>
               </div>
               
+              <!-- Price and Select Button -->
               <div class="col-span-4 flex flex-col items-end justify-between">
                 <div class="text-right">
                   <div class="text-2xl font-bold text-red-600">${{flight.price}}</div>
                   <div class="text-sm text-gray-500">{{getSeatsMessage(flight.availableSeats)}}</div>
                 </div>
                 <button 
-                  mat-raised-button 
-                  color="primary"
+                  mat-raised-button
+                  class="select-button w-full"
                   [disabled]="flight.availableSeats === 0"
                   (click)="selectFlight(flight, true)"
-                  class="mt-4"
                 >
                   Select
                 </button>
@@ -180,6 +144,13 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Load More Button -->
+      <div class="load-more">
+        <button mat-stroked-button class="load-more-button" (click)="loadMoreResults()">
+          Load More Results
+        </button>
       </div>
     </ng-container>
   </div>

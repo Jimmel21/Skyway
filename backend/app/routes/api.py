@@ -23,38 +23,57 @@ def get_airports():
 
 @api_bp.route('/flights/search', methods=['POST'])
 def search_flights():
-    """
-    Search Flights API
-    Expects JSON: {
-        "origin_id": 1,
-        "destination_id": 2,
-        "date": "2024-06-15"
-    }
-    """
     try:
         data = request.get_json()
+        print("Received search data:", data)  # Debug log
         
-        # Validate required fields
-        required_fields = ['origin_id', 'destination_id', 'date']
-        if not all(field in data for field in required_fields):
-            return jsonify({'error': 'Missing required fields'}), 400
+        # Convert the date string to a Date object
+        search_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+        
+        # Debug log before query
+        print(f"Searching for flights with: origin_id={data['origin_id']}, destination_id={data['destination_id']}, date={search_date}")
             
-        # Validate origin and destination are different
-        if data['origin_id'] == data['destination_id']:
-            return jsonify({'error': 'Origin and destination cannot be the same'}), 400
-            
-        # Query flights
-        flights = Flight.query.filter(
+        # Updated query to use departure_date
+        outbound_flights = Flight.query.filter(
             Flight.origin_id == data['origin_id'],
             Flight.destination_id == data['destination_id'],
-            Flight.departure_date.like(f"%{data['date']}%"),
+            Flight.departure_date == search_date,
             Flight.available_seats > 0
         ).all()
+
+        # Debug log after query
+        print(f"Found {len(outbound_flights)} outbound flights")
+
+        return_flights = []
+        if 'return_date' in data and data['return_date']:
+            return_date = datetime.strptime(data['return_date'], '%Y-%m-%d').date()
+            return_flights = Flight.query.filter(
+                Flight.origin_id == data['destination_id'],
+                Flight.destination_id == data['origin_id'],
+                Flight.departure_date == return_date,
+                Flight.available_seats > 0
+            ).all()
+            print(f"Found {len(return_flights)} return flights")
+
+        # Let's check what's in the database for these routes
+        all_route_flights = Flight.query.filter(
+            Flight.origin_id == data['origin_id'],
+            Flight.destination_id == data['destination_id']
+        ).all()
+        print(f"Total flights for this route: {len(all_route_flights)}")
         
-        # Format response
-        flight_list = []
-        for flight in flights:
-            flight_list.append({
+        response = {
+            'outboundFlights': [{
+                'id': flight.id,
+                'departureTime': flight.departure_time,
+                'arrivalTime': flight.arrival_time,
+                'origin': flight.origin_airport.display_name,  # Use the relationship
+                'destination': flight.destination_airport.display_name,  # Use the relationship
+                'duration': flight.duration,
+                'price': flight.price,
+                'availableSeats': flight.available_seats
+            } for flight in outbound_flights],
+            'returnFlights': [{
                 'id': flight.id,
                 'departureTime': flight.departure_time,
                 'arrivalTime': flight.arrival_time,
@@ -63,13 +82,17 @@ def search_flights():
                 'duration': flight.duration,
                 'price': flight.price,
                 'availableSeats': flight.available_seats
-            })
+            } for flight in return_flights] if return_flights else []
+        }
         
-        return jsonify(flight_list)
+        # Debug log response
+        print("Sending response:", response)
+        
+        return jsonify(response)
         
     except Exception as e:
+        print("Error in search_flights:", str(e))  # Debug log
         return jsonify({'error': str(e)}), 500
-
 
 @api_bp.route('/bookings', methods=['POST'])
 def create_booking():

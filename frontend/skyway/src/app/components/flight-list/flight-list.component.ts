@@ -8,14 +8,15 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface SearchDetails {
-  departure_city: string;
-  arrival_city: string;
+  originName: string;
+  destinationName: string;
+  origin_id: number;
+  destination_id: number;
   date: string;
   return_date?: string | null;
   passengers: number;
   tripType: 'roundtrip' | 'oneway' | 'recent';
 }
-
 @Component({
   selector: 'app-flight-results',
   templateUrl: './flight-list.component.html',
@@ -48,10 +49,16 @@ export class FlightResultsComponent implements OnInit {
       error?: string;
     };
 
+    console.log('Full Navigation State:', state);
+    console.log('Search Results from state:', state?.searchResults);
+    console.log('Return Flights from state:', state?.returnFlights);
+    console.log('Search Details:', state?.searchCriteria);
+
     if (state) {
       this.flights = state.searchResults;
       this.returnFlights = state.returnFlights || [];
       this.searchDetails = state.searchCriteria;
+      console.log('Search Details:', this.searchDetails);
       this.error = state.error || null;
       this.noFlightsFound = this.flights.length === 0;
     }
@@ -65,6 +72,10 @@ export class FlightResultsComponent implements OnInit {
       return;
     }
     this.sortFlights(this.selectedSort);
+  }
+
+  loadMoreResults() {
+    console.log('Loading more results...just for demo. Does not work sry.');
   }
 
   formatDate(date: string): string {

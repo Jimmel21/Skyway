@@ -283,12 +283,27 @@ export class SearchComponent implements OnInit {
         console.log('Sending search request:', searchData);
 
         this.airportService.searchFlights(searchData).subscribe({
-          next: (response: Flight[]) => {
-            console.log('Received response:', response);
+          next: (response: FlightSearchResponse) => {
+            console.log('Raw API Response:', response);
+
+            console.log('Outbound Flights:', response.outboundFlights); 
+
+            const navigationState = {
+              searchResults: response.outboundFlights, // or response.flights?
+              returnFlights: response.returnFlights || [],
+              searchCriteria: {
+                ...searchData,
+                originName: formValue.from.display_name,
+                destinationName: formValue.to.display_name,
+                tripType: this.tripType
+              }
+            };
+        
+            console.log('Navigation State being sent:', navigationState);
             this.router.navigate(['/flights'], { 
               state: { 
-                searchResults: response,
-                returnFlights: [], // You might need to make a separate API call for return flights
+                searchResults: response.outboundFlights,
+                returnFlights: response.returnFlights || [],
                 searchCriteria: {
                   ...searchData,
                   tripType: this.tripType,
