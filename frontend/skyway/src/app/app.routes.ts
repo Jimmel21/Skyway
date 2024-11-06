@@ -26,5 +26,10 @@ export const routes: Routes = [
     path: 'confirmation',
     loadComponent: () => import('./components/booking-confirmation/booking-confirmation.component')
       .then(m => m.BookingConfirmationComponent)
+  }, 
+  {
+    path: 'my-trips',
+    loadComponent: () => import('./components/my-trips/my-trips.component')
+      .then(m => m.MyTripsComponent)
   }
 ];

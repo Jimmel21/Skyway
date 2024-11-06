@@ -67,8 +67,8 @@ def search_flights():
                 'id': flight.id,
                 'departureTime': flight.departure_time,
                 'arrivalTime': flight.arrival_time,
-                'origin': flight.origin_airport.display_name,  # Use the relationship
-                'destination': flight.destination_airport.display_name,  # Use the relationship
+                'origin': flight.origin_airport.display_name, 
+                'destination': flight.destination_airport.display_name, 
                 'duration': flight.duration,
                 'price': flight.price,
                 'availableSeats': flight.available_seats
@@ -158,7 +158,6 @@ def create_booking():
 @api_bp.route('/bookings/search', methods=['POST'])
 def search_bookings():
     """
-    View Bookings API
     Expects JSON either:
     {
         "email": "john@example.com",
@@ -171,7 +170,9 @@ def search_bookings():
     """
     try:
         data = request.get_json()
-        
+
+        # bookings = Booking.query.all()
+        # return str(bookings)
         if 'booking_reference' in data:
             # Search by booking reference
             booking = Booking.query.filter_by(reference=data['booking_reference']).first()
@@ -194,8 +195,7 @@ def search_bookings():
             
         else:
             return jsonify({'error': 'Invalid search criteria'}), 400
-        
-        # Format response
+     
         booking_list = []
         for booking in bookings:
             flight = Flight.query.get(booking.flight_id)
@@ -204,8 +204,8 @@ def search_bookings():
             booking_list.append({
                 'reference': booking.reference,
                 'flight': {
-                    'departure_city': flight.origin,
-                    'arrival_city': flight.destination,
+                    'departure_city': flight.origin_airport.display_name,
+                    'arrival_city': flight.destination_airport.display_name,
                     'departure_time': flight.departure_time,
                     'arrival_time': flight.arrival_time
                 },

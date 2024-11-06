@@ -41,6 +41,29 @@ export interface SearchCriteria extends FlightSearchRequest {
   tripType: 'roundtrip' | 'oneway' | 'recent';
 }
 
+export interface BookingSearchRequest {
+    booking_reference?: string;
+    email?: string;
+    last_name?: string;
+}
+
+export interface TripDetails {
+    reference: string;
+    flight: {
+      departure_city: string;
+      arrival_city: string;
+      departure_time: string;
+      arrival_time: string;
+    };
+    passenger: {
+      name: string;
+      email: string;
+    };
+    status: string;
+  }
+
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -61,6 +84,10 @@ export class AirportService {
       searchData,
       { headers }
     );
+  }
+
+  searchBookings(searchData: BookingSearchRequest): Observable<TripDetails[]> {
+    return this.http.post<TripDetails[]>(`${this.apiUrl}/bookings/search`, searchData);
   }
 
   private formatDate(date: string | Date): string {

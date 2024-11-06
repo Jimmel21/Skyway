@@ -17,7 +17,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       <div class="nav-container">
         <a routerLink="/" class="logo">SkyWay</a>
         <div class="nav-links">
-          <a routerLink="/search">Search</a>
+          <a routerLink="/">Search</a>
           <a routerLink="/my-trips">My Trips</a>
         </div>
       </div>

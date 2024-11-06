@@ -1,0 +1,141 @@
+<div class="my-trips-container">
+    <div class="content-wrapper">
+      <h1 class="text-2xl font-bold mb-6">My Trips</h1>
+      
+      <!-- Search Form -->
+      <div class="search-form-container mb-8">
+        <form [formGroup]="searchForm" (ngSubmit)="searchTrips()" class="space-y-6">
+          <div class="flex gap-4 mb-4">
+            <button type="button" 
+                    class="px-4 py-2 rounded-lg"
+                    [ngClass]="{'bg-red-600 text-white': searchMode === 'reference', 'bg-gray-100': searchMode !== 'reference'}"
+                    (click)="switchMode('reference')">
+              Search by Booking Reference
+            </button>
+            <button type="button" 
+                    class="px-4 py-2 rounded-lg"
+                    [ngClass]="{'bg-red-600 text-white': searchMode === 'email', 'bg-gray-100': searchMode !== 'email'}"
+                    (click)="switchMode('email')">
+              Search by Email
+            </button>
+          </div>
+  
+          <!-- Booking Reference Search -->
+          @if (searchMode === 'reference') {
+            <div class="form-section">
+              <div class="mb-4">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Booking Reference</mat-label>
+                  <input matInput 
+                         formControlName="bookingReference" 
+                         placeholder="e.g., SKY123456">
+                  @if (searchForm.get('bookingReference')?.errors?.['pattern']) {
+                    <mat-error>
+                      Please enter a valid booking reference (SKY followed by 6 characters)
+                    </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+          }
+  
+          <!-- Email Search -->
+          @if (searchMode === 'email') {
+            <div class="form-section space-y-4">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Email</mat-label>
+                <input matInput 
+                       formControlName="email" 
+                       placeholder="Enter your email">
+                @if (searchForm.get('email')?.errors?.['email']) {
+                  <mat-error>
+                    Please enter a valid email address
+                  </mat-error>
+                }
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Last Name</mat-label>
+                <input matInput 
+                       formControlName="lastName" 
+                       placeholder="Enter your last name">
+                @if (searchForm.get('lastName')?.errors?.['pattern']) {
+                  <mat-error>
+                    Please enter a valid last name
+                  </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          }
+  
+          <div class="flex justify-center">
+            <button mat-flat-button 
+                    color="primary"
+                    type="submit"
+                    [disabled]="!isFormValid()"
+                    class="px-8 py-2">
+              Search Trips
+            </button>
+          </div>
+        </form>
+      </div>
+  
+      <!-- Error Message -->
+      @if (error) {
+        <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
+          {{ error }}
+        </div>
+      }
+  
+      <!-- Loading State -->
+      @if (isLoading) {
+        <div class="flex flex-col items-center gap-4 py-8">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p class="text-gray-600">Searching for your trips...</p>
+        </div>
+      }
+  
+      <!-- Results Section -->
+      @if (trips.length > 0) {
+        <div class="space-y-8">
+          <h2 class="text-xl font-semibold">Your Trips</h2>
+  
+          <!-- Current/Future Trips -->
+          @if (getCurrentTrips().length > 0) {
+            <div class="space-y-4">
+              <h3 class="text-lg font-medium text-gray-700">Upcoming Trips</h3>
+              <div class="space-y-4">
+                @for (trip of getCurrentTrips(); track trip.reference) {
+                  <app-trip-card 
+                    [trip]="trip"
+                    [expanded]="selectedTrip?.reference === trip.reference"
+                    [isUpcoming]="true"
+                    (click)="toggleTripDetails(trip)"
+                    class="block transition-all hover:shadow-md">
+                  </app-trip-card>
+                }
+              </div>
+            </div>
+          }
+  
+          <!-- Past Trips -->
+          @if (getPastTrips().length > 0) {
+            <div class="space-y-4">
+              <h3 class="text-lg font-medium text-gray-700">Past Trips</h3>
+              <div class="space-y-4">
+                @for (trip of getPastTrips(); track trip.reference) {
+                  <app-trip-card 
+                    [trip]="trip"
+                    [expanded]="selectedTrip?.reference === trip.reference"
+                    [isUpcoming]="false"
+                    (click)="toggleTripDetails(trip)"
+                    class="block transition-all hover:shadow-md">
+                  </app-trip-card>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
