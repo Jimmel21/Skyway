@@ -2,7 +2,7 @@
     <div class="content-wrapper">
       <h1 class="page-title">My Trips</h1>
       
-      <!-- Search Form -->
+
       <div class="search-form-container">
         <form [formGroup]="searchForm" (ngSubmit)="searchTrips()" class="search-form">
           <div class="search-options">
@@ -92,7 +92,6 @@
         </div>
       }
   
-      <!-- Loading State -->
       @if (isLoading) {
         <div class="loading-state">
           <mat-spinner diameter="40"></mat-spinner>
@@ -100,47 +99,36 @@
         </div>
       }
   
-      <!-- Results Section -->
+      <!-- Trip Results Section -->
       @if (trips.length > 0) {
         <div class="results-section">
-          <h2 class="section-title">Your Trips</h2>
-  
-          <!-- Current/Future Trips -->
-          @defer (when getCurrentTrips().length > 0) {
-            <div class="trips-section">
-              <h3 class="subsection-title">Upcoming Trips</h3>
-              <div class="trips-list">
-                @for (trip of getCurrentTrips(); track trip.reference) {
-                  <app-trip-card 
+          <h2 class="section-title">Your Trips ({{trips.length}} total)</h2>
+        
+          
+          <div class="trips-section">
+            <h3 class="subsection-title">All Trips</h3>
+            <div class="trips-list">
+              @for (trip of trips; track trip.reference) {
+                <div style="border: 1px solid #ccc; margin: 10px 0; padding: 10px;">
+        
+                  
+                  <app-trip-card
                     [trip]="trip"
                     [expanded]="selectedTrip?.reference === trip.reference"
                     [isUpcoming]="true"
-                    (click)="toggleTripDetails(trip)"
-                    class="trip-card-wrapper upcoming">
+                    (click)="toggleTripDetails(trip)">
                   </app-trip-card>
-                }
-              </div>
+                </div>
+              }
             </div>
-          }
-  
-          <!-- Past Trips -->
-          @defer (when getPastTrips().length > 0) {
-            <div class="trips-section">
-              <h3 class="subsection-title">Past Trips</h3>
-              <div class="trips-list">
-                @for (trip of getPastTrips(); track trip.reference) {
-                  <app-trip-card 
-                    [trip]="trip"
-                    [expanded]="selectedTrip?.reference === trip.reference"
-                    [isUpcoming]="false"
-                    (click)="toggleTripDetails(trip)"
-                    class="trip-card-wrapper past">
-                  </app-trip-card>
-                }
-              </div>
-            </div>
-          }
+          </div>
         </div>
       }
+        <!-- No Results Message
+        @if (trips.length === 0 && !isLoading && !error) {
+            <div class="no-results">
+            <p class="text-gray-600 text-center">No trips found. Try searching with different criteria.</p>
+            </div>
+        } -->
     </div>
   </div>

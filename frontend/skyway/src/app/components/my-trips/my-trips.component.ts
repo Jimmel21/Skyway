@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, PLATFORM_ID, Inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -36,6 +36,7 @@ export class MyTripsComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private airportService: AirportService,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -134,7 +135,7 @@ export class MyTripsComponent implements OnInit, OnDestroy {
     if (!this.isFormValid()) {
       return;
     }
-
+  
     if (!silent) {
       this.isLoading = true;
       this.error = null;
@@ -146,15 +147,22 @@ export class MyTripsComponent implements OnInit, OnDestroy {
           email: this.searchForm.get('email')?.value,
           last_name: this.searchForm.get('lastName')?.value
         };
-
+  
     try {
       const response = await this.airportService.searchBookings(searchData).toPromise();
       if (response) {
-        this.trips = this.sortTrips(response);
+        // Sort trips by departure time
+        this.trips = response.sort((a, b) => {
+          const dateA = new Date(a.flight.departure_time);
+          const dateB = new Date(b.flight.departure_time);
+          return dateB.getTime() - dateA.getTime();
+        });
         
         if (this.trips.length === 0) {
           this.error = 'No trips found matching your search criteria.';
         }
+        console.log('Found trips:', this.trips);
+        this.cdr.detectChanges();
       }
     } catch (error: any) {
       console.error('Search error:', error);
@@ -162,6 +170,32 @@ export class MyTripsComponent implements OnInit, OnDestroy {
       this.trips = [];
     } finally {
       this.isLoading = false;
+    }
+  }
+  
+  getCurrentTrips(): TripDetails[] {
+    const now = new Date();
+    try {
+      return this.trips.filter(trip => {
+        const tripDate = new Date(trip.flight.departure_time);
+        return !isNaN(tripDate.getTime()) && tripDate >= now;
+      });
+    } catch (error) {
+      console.error('Error filtering current trips:', error);
+      return [];
+    }
+  }
+  
+  getPastTrips(): TripDetails[] {
+    const now = new Date();
+    try {
+      return this.trips.filter(trip => {
+        const tripDate = new Date(trip.flight.departure_time);
+        return !isNaN(tripDate.getTime()) && tripDate < now;
+      });
+    } catch (error) {
+      console.error('Error filtering past trips:', error);
+      return [];
     }
   }
 
@@ -173,21 +207,7 @@ export class MyTripsComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCurrentTrips(): TripDetails[] {
-    const now = new Date();
-    return this.trips.filter(trip => {
-      const departureDate = new Date(trip.flight.departure_time);
-      return departureDate >= now;
-    });
-  }
-
-  getPastTrips(): TripDetails[] {
-    const now = new Date();
-    return this.trips.filter(trip => {
-      const departureDate = new Date(trip.flight.departure_time);
-      return departureDate < now;
-    });
-  }
+  
 
   toggleTripDetails(trip: TripDetails): void {
     this.selectedTrip = this.selectedTrip?.reference === trip.reference ? null : trip;

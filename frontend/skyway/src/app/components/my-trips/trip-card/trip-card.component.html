@@ -8,59 +8,46 @@
           {{trip.flight.departure_city}} → {{trip.flight.arrival_city}}
         </div>
         <div class="schedule">
-          <span class="departure">
-            {{formatDate(trip.flight.departure_time)}} at {{formatTime(trip.flight.departure_time)}}
-          </span>
-          <span class="duration">
-            {{getTripDuration()}}
-          </span>
+          <div class="departure">
+            <span class="time">{{formatTime(trip.flight.departure_time)}}</span>
+          </div>
         </div>
       </div>
-      
+  
       <div class="status-container">
-        <mat-chip-set>
-          <mat-chip [class]="getStatusClass()">
-            {{trip.status}}
-          </mat-chip>
-        </mat-chip-set>
+        <mat-chip [ngClass]="getStatusClass()">
+          {{trip.status}}
+        </mat-chip>
       </div>
     </div>
-    
+  
     @if (expanded) {
       <div class="card-details">
         <div class="details-grid">
           <div class="detail-section">
             <h4>Passenger Details</h4>
             <div class="detail-content">
-              <p class="passenger-name">{{trip.passenger.name}}</p>
-              <p class="passenger-email">{{trip.passenger.email}}</p>
+              <div class="passenger-name">{{trip.passenger.name}}</div>
+              <div class="passenger-email">{{trip.passenger.email}}</div>
             </div>
           </div>
-          
+  
           <div class="detail-section">
             <h4>Flight Details</h4>
             <div class="detail-content">
-              <div class="flight-time">
-                <p class="label">Departure</p>
-                <p>{{formatTime(trip.flight.departure_time)}}</p>
-                <p class="date">{{formatDate(trip.flight.departure_time)}}</p>
-              </div>
-              <div class="flight-time">
-                <p class="label">Arrival</p>
-                <p>{{formatTime(trip.flight.arrival_time)}}</p>
-                <p class="date">{{formatDate(trip.flight.arrival_time)}}</p>
+              <div class="time-details">
+                <div class="departure">
+                  <strong>Departure:</strong>
+                  <div>{{formatTime(trip.flight.departure_time)}}</div>
+                </div>
+                <div class="arrival">
+                  <strong>Arrival:</strong>
+                  <div>{{formatTime(trip.flight.arrival_time)}}</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        
-        @if (isCheckInAvailable()) {
-          <div class="check-in-section">
-            <button mat-raised-button color="primary">
-              Check In Now
-            </button>
-          </div>
-        }
       </div>
     }
   </div>

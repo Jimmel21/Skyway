@@ -3,24 +3,14 @@
     border-radius: 0.5rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     overflow: hidden;
-    transition: all 0.2s ease-in-out;
-    border: 1px solid #E5E7EB;
-  
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-  
-    &.upcoming {
-      border-left: 4px solid #DC2626;
-    }
-  
+    
     .card-header {
-      padding: 1rem;
+      padding: 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 1rem;
+      border-bottom: 1px solid #E5E7EB;
   
       .trip-info {
         flex: 1;
@@ -35,23 +25,15 @@
           font-size: 1.125rem;
           font-weight: 600;
           color: #1F2937;
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.75rem;
         }
   
         .schedule {
           display: flex;
-          align-items: center;
-          gap: 1rem;
+          flex-direction: column;
+          gap: 0.25rem;
           color: #4B5563;
           font-size: 0.875rem;
-  
-          .duration {
-            color: #6B7280;
-            &:before {
-              content: '•';
-              margin-right: 1rem;
-            }
-          }
         }
       }
   
@@ -68,8 +50,8 @@
               color: #DC2626;
             }
             
-            &.status-completed {
-              background-color: #E5E7EB;
+            &.status-default {
+              background-color: #F3F4F6;
               color: #4B5563;
             }
           }
@@ -78,13 +60,12 @@
     }
   
     .card-details {
-      border-top: 1px solid #E5E7EB;
+      padding: 1.5rem;
       background-color: #F9FAFB;
-      padding: 1rem;
   
       .details-grid {
         display: grid;
-        gap: 2rem;
+        gap: 1.5rem;
         
         @media (min-width: 640px) {
           grid-template-columns: repeat(2, 1fr);
@@ -100,10 +81,9 @@
         }
   
         .detail-content {
-          color: #1F2937;
-  
           .passenger-name {
             font-weight: 500;
+            color: #1F2937;
             margin-bottom: 0.25rem;
           }
   
@@ -111,31 +91,20 @@
             color: #6B7280;
             font-size: 0.875rem;
           }
-  
-          .flight-time {
-            margin-bottom: 1rem;
-  
-            .label {
-              font-size: 0.75rem;
-              text-transform: uppercase;
-              color: #6B7280;
-              margin-bottom: 0.25rem;
-            }
-  
-            .date {
-              font-size: 0.875rem;
-              color: #6B7280;
-            }
-          }
         }
       }
-  
-      .check-in-section {
-        margin-top: 1.5rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid #E5E7EB;
-        display: flex;
-        justify-content: center;
-      }
     }
+  
+    &.upcoming {
+      border-left: 4px solid #DC2626;
+    }
+  
+    &:hover {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    // Debug styles
+    border: 2px solid red;
+    margin: 10px 0;
+    min-height: 100px;
   }
