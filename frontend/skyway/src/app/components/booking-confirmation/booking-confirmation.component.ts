@@ -1,13 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
-
-interface BookingDetails {
-  reference: string;
-  flight: string;
-  date: string;
-  passenger: string;
-}
+import { PdfService, BookingDetails } from '../../services/pdf.service';
 
 @Component({
   selector: 'app-booking-confirmation',
@@ -32,11 +26,27 @@ export class BookingConfirmationComponent {
     passenger: 'John Doe'
   };
 
-  downloadETicket() {
-    console.log('Downloading E-Ticket...');
+  @ViewChild('confirmationContent') confirmationContent!: ElementRef<HTMLElement>;
+
+  constructor(private pdfService: PdfService) {}
+
+  async downloadETicket(): Promise<void> {
+    try {
+      await this.pdfService.generateETicket(this.booking);
+    } catch (error) {
+      console.error('Error downloading E-Ticket:', error);
+      
+    }
   }
 
-  printConfirmation() {
-    console.log('Printing confirmation...');
+  async printConfirmation(): Promise<void> {
+    if (this.confirmationContent) {
+      try {
+        await this.pdfService.generateConfirmation(this.confirmationContent.nativeElement);
+      } catch (error) {
+        console.error('Error printing confirmation:', error);
+        
+      }
+    }
   }
 }
