@@ -33,12 +33,10 @@ export class BookingConfirmationComponent {
   };
 
   downloadETicket() {
-    // Implement download logic
     console.log('Downloading E-Ticket...');
   }
 
   printConfirmation() {
-    // Implement print logic
     console.log('Printing confirmation...');
   }
 }

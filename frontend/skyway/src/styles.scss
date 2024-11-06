@@ -1,10 +1,8 @@
 @use '@angular/material' as mat;
 @include mat.core();
 
-// Include common styles for Angular Material
 @include mat.core();
 
-// Define primary color palette
 $primary-palette: (
   50: #fef2f2,
   100: #fee2e2,
@@ -35,7 +33,6 @@ $myapp-theme: mat.m2-define-light-theme((
 
 @include mat.all-component-themes($myapp-theme);
 
-// // Define the theme
 // $theme-primary: mat.define-palette($primary-palette);
 // $theme-accent: mat.define-palette(mat.$grey-palette);
 // $theme-warn: mat.define-palette(mat.$red-palette);
@@ -48,7 +45,6 @@ $myapp-theme: mat.m2-define-light-theme((
 //   )
 // ));
 
-// // Apply the theme
 // @include mat.all-component-themes($theme);
 
 // Global styles
@@ -62,7 +58,6 @@ body {
   background-color: #F9FAFB;
 }
 
-// Utility classes
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -82,7 +77,6 @@ body {
   }
 }
 
-// Material overrides
 .mat-mdc-form-field {
   width: 100%;
 }
