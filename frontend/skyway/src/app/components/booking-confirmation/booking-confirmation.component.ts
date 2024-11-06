@@ -1,5 +1,5 @@
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, ViewChild, ElementRef, PLATFORM_ID, inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { PdfService, BookingDetails } from '../../services/pdf.service';
 
@@ -19,6 +19,9 @@ import { PdfService, BookingDetails } from '../../services/pdf.service';
   ]
 })
 export class BookingConfirmationComponent {
+  private platformId = inject(PLATFORM_ID);
+  isLoading = false;
+
   @Input() booking: BookingDetails = {
     reference: 'SKY123456',
     flight: 'New York (JFK) to London (LHR)',
@@ -31,22 +34,43 @@ export class BookingConfirmationComponent {
   constructor(private pdfService: PdfService) {}
 
   async downloadETicket(): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    this.isLoading = true;
     try {
       await this.pdfService.generateETicket(this.booking);
     } catch (error) {
       console.error('Error downloading E-Ticket:', error);
-      
+    
+    } finally {
+      this.isLoading = false;
     }
   }
 
-  async printConfirmation(): Promise<void> {
-    if (this.confirmationContent) {
-      try {
-        await this.pdfService.generateConfirmation(this.confirmationContent.nativeElement);
-      } catch (error) {
-        console.error('Error printing confirmation:', error);
-        
-      }
+  // async printConfirmation(): Promise<void> {
+  //   if (!isPlatformBrowser(this.platformId)) {
+  //     return;
+  //   }
+
+  //   if (this.confirmationContent) {
+  //     this.isLoading = true;
+  //     try {
+  //       await this.pdfService.printConfirmation(this.confirmationContent.nativeElement);
+  //     } catch (error) {
+  //       console.error('Error printing confirmation:', error);
+      
+  //     } finally {
+  //       this.isLoading = false;
+  //     }
+  //   }
+  // }
+  printConfirmation(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
     }
+    
+    this.pdfService.printConfirmation();
   }
 }
