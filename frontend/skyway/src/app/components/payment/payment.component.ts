@@ -198,14 +198,53 @@ export class PaymentSummaryComponent implements OnInit {
     return 'Invalid input';
   }
 
+  // async onSubmit(): Promise<void> {
+  //   if (this.paymentForm.valid) {
+  //     this.isProcessing = true;
+  //     try {
+  //       await new Promise(resolve => setTimeout(resolve, 1500));
+  //       console.log('Payment processed:', this.paymentForm.value);
+  //       this.router.navigate(['/booking-confirmation']);
+  //     } catch (error) {
+  //       console.error('Payment failed:', error);
+  //     } finally {
+  //       this.isProcessing = false;
+  //     }
+  //   } else {
+  //     Object.keys(this.paymentForm.controls).forEach(key => {
+  //       const control = this.paymentForm.get(key);
+  //       if (control?.invalid) {
+  //         control.markAsTouched();
+  //       }
+  //     });
+  //   }
+  // }
+
   async onSubmit(): Promise<void> {
     if (this.paymentForm.valid) {
       this.isProcessing = true;
       try {
-        // Simulate payment processing
+      
         await new Promise(resolve => setTimeout(resolve, 1500));
         console.log('Payment processed:', this.paymentForm.value);
-        this.router.navigate(['/booking-confirmation']);
+        
+        
+        const bookingRef = 'SKY' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        
+     
+        const nameOnCard = this.paymentForm.get('nameOnCard')?.value;
+        
+   
+        this.router.navigate(['/confirmation'], { 
+          state: {
+            booking: {
+              reference: bookingRef,
+              flight: `${this.flightDetails.from} to ${this.flightDetails.to}`,
+              date: this.flightDetails.date,
+              passenger: nameOnCard 
+            }
+          }
+        });
       } catch (error) {
         console.error('Payment failed:', error);
       } finally {
