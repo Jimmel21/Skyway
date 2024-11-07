@@ -279,7 +279,7 @@ export class SearchComponent implements OnInit {
           searchData.passengers = parseInt(formValue.guests.split(' ')[0]) || 1;
         }
 
-        // Debug log
+  
         console.log('Sending search request:', searchData);
 
         this.airportService.searchFlights(searchData).subscribe({

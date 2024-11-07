@@ -1,125 +1,155 @@
 <div class="passenger-container">
-    <!-- <nav class="navbar">
-      <div class="logo">SkyWay</div>
-      <div class="nav-links">
-        <a href="#" class="nav-link">Search</a>
-        <a href="#" class="nav-link">My Trips</a>
-      </div>
-    </nav> -->
-  
-    <div class="content">
-      <h1>Passenger Information</h1>
-  
-      <div class="form-container">
-        <div class="passenger-card">
-          <h2>Passenger 1</h2>
-  
-          <form [formGroup]="passengerForm" (ngSubmit)="onSubmit()">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="firstName">First Name</label>
-                <input 
-                  id="firstName"
-                  type="text"
-                  formControlName="firstName"
-                  [class.error]="hasError('firstName', 'required') || hasError('firstName', 'pattern')"
-                >
-                <span class="error-message" *ngIf="hasError('firstName', 'required')">
-                  First name is required
-                </span>
-                <span class="error-message" *ngIf="hasError('firstName', 'pattern')">
-                  Please enter a valid name
-                </span>
-              </div>
-  
-              <div class="form-group">
-                <label for="lastName">Last Name</label>
-                <input 
-                  id="lastName"
-                  type="text"
-                  formControlName="lastName"
-                  [class.error]="hasError('lastName', 'required') || hasError('lastName', 'pattern')"
-                >
-                <span class="error-message" *ngIf="hasError('lastName', 'required')">
-                  Last name is required
-                </span>
-                <span class="error-message" *ngIf="hasError('lastName', 'pattern')">
-                  Please enter a valid name
-                </span>
-              </div>
-            </div>
-  
-            <div class="form-group">
-              <label for="dateOfBirth">Date of Birth</label>
-              <input 
-                id="dateOfBirth"
-                type="date"
-                formControlName="dateOfBirth"
-                [class.error]="hasError('dateOfBirth', 'required') || hasError('dateOfBirth', 'invalidDate') || hasError('dateOfBirth', 'invalidAge')"
-              >
-              <span class="error-message" *ngIf="hasError('dateOfBirth', 'required')">
-                Date of birth is required
-              </span>
-              <span class="error-message" *ngIf="hasError('dateOfBirth', 'invalidDate') || hasError('dateOfBirth', 'invalidAge')">
-                Please enter a valid date of birth
-              </span>
-            </div>
-  
-            <div class="form-group">
-              <label for="gender">Gender</label>
-              <select 
-                id="gender"
-                formControlName="gender"
-                [class.error]="hasError('gender', 'required')"
-              >
-                <option value="">Select gender</option>
-                <option *ngFor="let option of genderOptions" [value]="option">
-                  {{option}}
-                </option>
-              </select>
-              <span class="error-message" *ngIf="hasError('gender', 'required')">
-                Gender is required
-              </span>
-            </div>
-  
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input 
-                id="email"
-                type="email"
-                formControlName="email"
-                [class.error]="hasError('email', 'required') || hasError('email', 'email')"
-              >
-              <span class="error-message" *ngIf="hasError('email', 'required')">
-                Email is required
-              </span>
-              <span class="error-message" *ngIf="hasError('email', 'email')">
-                Please enter a valid email address
-              </span>
-            </div>
-  
-            <div class="form-group">
-              <label for="phoneNumber">Phone Number</label>
-              <input 
-                id="phoneNumber"
-                type="tel"
-                formControlName="phoneNumber"
-                (input)="formatPhoneNumber($event)"
-                [class.error]="hasError('phoneNumber', 'required') || hasError('phoneNumber', 'pattern')"
-              >
-              <span class="error-message" *ngIf="hasError('phoneNumber', 'required')">
-                Phone number is required
-              </span>
-              <span class="error-message" *ngIf="hasError('phoneNumber', 'pattern')">
-                Please enter a valid 10-digit phone number
-              </span>
-            </div>
-  
-            <button type="submit" class="submit-button">
-              Continue to Payment
-            </button>
-          </form>
+  <div class="content">
+    <h1>Passenger Information</h1>
+
+    <!-- Flight Summary -->
+    <div class="flight-summary" *ngIf="selectedFlights">
+      <div class="card bg-white p-4 rounded-lg shadow-sm mb-6">
+        <h2 class="text-lg font-semibold mb-4">Flight Summary</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Outbound Flight -->
+          <div class="flight-details">
+            <h3 class="font-medium mb-2">Outbound Flight</h3>
+            <p>{{selectedFlights.flight.origin}} → {{selectedFlights.flight.destination}}</p>
+            <p>Departure: {{selectedFlights.flight.departureTime}}</p>
+            <p>Arrival: {{selectedFlights.flight.arrivalTime}}</p>
+          </div>
+          
+          <!-- Return Flight if exists -->
+          <div class="flight-details" *ngIf="selectedFlights.returnFlight">
+            <h3 class="font-medium mb-2">Return Flight</h3>
+            <p>{{selectedFlights.returnFlight.origin}} → {{selectedFlights.returnFlight.destination}}</p>
+            <p>Departure: {{selectedFlights.returnFlight.departureTime}}</p>
+            <p>Arrival: {{selectedFlights.returnFlight.arrivalTime}}</p>
+          </div>
+        </div>
+        <div class="total-price mt-4 text-right">
+          <p class="text-lg font-bold">Total Price: ${{selectedFlights.totalPrice}}</p>
         </div>
       </div>
     </div>
+
+    <!-- Passenger Form -->
+    <div class="form-container">
+      <div class="passenger-card">
+        <h2 class="text-lg font-semibold mb-4">Passenger Details</h2>
+        
+        <form [formGroup]="passengerForm" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input 
+                id="firstName"
+                type="text"
+                formControlName="firstName"
+                class="form-control"
+                [class.error]="hasError('firstName', 'required') || hasError('firstName', 'pattern')"
+              >
+              <div class="error-message" *ngIf="hasError('firstName', 'required')">
+                First name is required
+              </div>
+              <div class="error-message" *ngIf="hasError('firstName', 'pattern')">
+                Please enter a valid name
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input 
+                id="lastName"
+                type="text"
+                formControlName="lastName"
+                class="form-control"
+                [class.error]="hasError('lastName', 'required') || hasError('lastName', 'pattern')"
+              >
+              <div class="error-message" *ngIf="hasError('lastName', 'required')">
+                Last name is required
+              </div>
+              <div class="error-message" *ngIf="hasError('lastName', 'pattern')">
+                Please enter a valid name
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="dateOfBirth">Date of Birth</label>
+            <input 
+              id="dateOfBirth"
+              type="date"
+              formControlName="dateOfBirth"
+              class="form-control"
+              [class.error]="hasError('dateOfBirth', 'required') || hasError('dateOfBirth', 'invalidDate') || hasError('dateOfBirth', 'invalidAge')"
+            >
+            <div class="error-message" *ngIf="hasError('dateOfBirth', 'required')">
+              Date of birth is required
+            </div>
+            <div class="error-message" *ngIf="hasError('dateOfBirth', 'invalidDate') || hasError('dateOfBirth', 'invalidAge')">
+              Please enter a valid date of birth
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select 
+              id="gender"
+              formControlName="gender"
+              class="form-control"
+              [class.error]="hasError('gender', 'required')"
+            >
+              <option value="">Select gender</option>
+              <option *ngFor="let option of genderOptions" [value]="option">
+                {{option}}
+              </option>
+            </select>
+            <div class="error-message" *ngIf="hasError('gender', 'required')">
+              Gender is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input 
+              id="email"
+              type="email"
+              formControlName="email"
+              class="form-control"
+              [class.error]="hasError('email', 'required') || hasError('email', 'email')"
+            >
+            <div class="error-message" *ngIf="hasError('email', 'required')">
+              Email is required
+            </div>
+            <div class="error-message" *ngIf="hasError('email', 'email')">
+              Please enter a valid email address
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input 
+              id="phoneNumber"
+              type="tel"
+              formControlName="phoneNumber"
+              class="form-control"
+              (input)="formatPhoneNumber($event)"
+              [class.error]="hasError('phoneNumber', 'required') || hasError('phoneNumber', 'pattern')"
+            >
+            <div class="error-message" *ngIf="hasError('phoneNumber', 'required')">
+              Phone number is required
+            </div>
+            <div class="error-message" *ngIf="hasError('phoneNumber', 'pattern')">
+              Please enter a valid 10-digit phone number
+            </div>
+          </div>
+
+          <button 
+            type="submit" 
+            class="btn btn-primary w-full mt-6"
+            [disabled]="passengerForm.invalid"
+          >
+            Continue to Payment
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
+</div>

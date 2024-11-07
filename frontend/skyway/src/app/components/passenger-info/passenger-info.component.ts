@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Flight } from '../../services/airport.service';
 
-interface PassengerInfo {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  gender: string;
-  email: string;
-  phoneNumber: string;
+interface FlightSelection {
+  flight: Flight;
+  returnFlight?: Flight | null;
+  searchDetails?: any;
+  totalPrice: number;
 }
 
 @Component({
@@ -24,12 +23,23 @@ interface PassengerInfo {
 })
 export class PassengerInfoComponent implements OnInit {
   passengerForm: FormGroup;
+  selectedFlights: FlightSelection | null = null;
   genderOptions = ['Male', 'Female', 'Other', 'Prefer not to say'];
 
   constructor(
     private fb: FormBuilder,
     private router: Router
   ) {
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state as FlightSelection;
+
+    if (state) {
+      this.selectedFlights = state;
+    } else {
+      // If no flight data, redirect back to search
+      this.router.navigate(['/']);
+    }
+
     this.passengerForm = this.fb.group({
       firstName: ['', [
         Validators.required,
@@ -55,7 +65,12 @@ export class PassengerInfoComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // If no flight data was passed, redirect to search page
+    if (!this.selectedFlights) {
+      this.router.navigate(['/']);
+    }
+  }
 
   dateValidator(control: any) {
     const today = new Date();
@@ -73,18 +88,17 @@ export class PassengerInfoComponent implements OnInit {
     return null;
   }
 
-  formatPhoneNumber(event: any): void {
-    let input = event.target.value.replace(/\D/g, '');
-    if (input.length > 10) input = input.substr(0, 10);
-    event.target.value = input;
-  }
-
   onSubmit(): void {
-    if (this.passengerForm.valid) {
-      // Store passenger information and navigate to payment page
-      const passengerInfo: PassengerInfo = this.passengerForm.value;
-      console.log('Passenger information:', passengerInfo);
-      this.router.navigate(['/payment']);
+    if (this.passengerForm.valid && this.selectedFlights) {
+      const passengerInfo = this.passengerForm.value;
+      
+      // Navigate to payment page with both passenger and flight info
+      this.router.navigate(['/payment'], {
+        state: {
+          passenger: passengerInfo,
+          flights: this.selectedFlights
+        }
+      });
     } else {
       Object.keys(this.passengerForm.controls).forEach(key => {
         const control = this.passengerForm.get(key);
@@ -98,5 +112,11 @@ export class PassengerInfoComponent implements OnInit {
   hasError(fieldName: string, errorType: string): boolean {
     const control = this.passengerForm.get(fieldName);
     return control?.touched && control?.hasError(errorType) || false;
+  }
+
+  formatPhoneNumber(event: any): void {
+    let input = event.target.value.replace(/\D/g, '');
+    if (input.length > 10) input = input.substr(0, 10);
+    event.target.value = input;
   }
 }

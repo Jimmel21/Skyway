@@ -128,13 +128,26 @@ export class FlightResultsComponent implements OnInit {
     return `${hours}h ${minutes || '00m'}`;
   }
 
+  // selectFlight(flight: Flight, isReturn: boolean = false): void {
+  //   this.router.navigate(['/passenger-info'], {
+  //     state: {
+  //       flight,
+  //       returnFlight: isReturn ? null : this.returnFlights[0],
+  //       searchDetails: this.searchDetails
+  //     }
+  //   });
+  // }
+
   selectFlight(flight: Flight, isReturn: boolean = false): void {
+    const navigationState = {
+      flight,
+      returnFlight: isReturn ? null : this.returnFlights[0],
+      searchDetails: this.searchDetails,
+      totalPrice: flight.price + (isReturn ? 0 : (this.returnFlights[0]?.price || 0))
+    };
+  
     this.router.navigate(['/passenger-info'], {
-      state: {
-        flight,
-        returnFlight: isReturn ? null : this.returnFlights[0],
-        searchDetails: this.searchDetails
-      }
+      state: navigationState
     });
   }
 
