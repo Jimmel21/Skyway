@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -8,6 +8,36 @@ interface CardType {
   name: string;
   pattern: RegExp;
   icon: string;
+}
+
+interface PaymentPageState {
+  passenger: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    dateOfBirth: string;
+    gender: string;
+  };
+  flights: {
+    flight: {
+      id: string;
+      origin: string;
+      destination: string;
+      departureTime: string;
+      arrivalTime: string;
+      price: number;
+    };
+    returnFlight?: {
+      id: string;
+      origin: string;
+      destination: string;
+      departureTime: string;
+      arrivalTime: string;
+      price: number;
+    } | null;
+    totalPrice: number;
+  };
 }
 
 @Component({
@@ -43,6 +73,7 @@ interface CardType {
   ]
 })
 export class PaymentSummaryComponent implements OnInit {
+  bookingDetails: PaymentPageState | null = null;
   paymentForm!: FormGroup;
   isProcessing = false;
   detectedCardType: string = '';
@@ -72,25 +103,38 @@ export class PaymentSummaryComponent implements OnInit {
     }
   ];
 
-  flightDetails = {
-    from: 'New York (JFK)',
-    to: 'London (LHR)',
-    date: 'June 15, 2023',
-    passengers: '1 Adult'
-  };
-
-  priceSummary = {
-    baseFare: 400,
-    taxesAndFees: 50,
-    total: 450
-  };
-
   constructor(
     private fb: FormBuilder,
-    private router: Router
-  ) {}
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    
+    if (isPlatformBrowser(this.platformId)) {
+      const navigation = this.router.getCurrentNavigation();
+      const state = navigation?.extras?.state as PaymentPageState;
+
+      if (state) {
+        this.bookingDetails = state;
+        console.log('Received booking details:', this.bookingDetails);
+      } else {
+        // If no state in navigation, check history state
+        const historyState = history.state;
+        if (historyState && historyState.passenger && historyState.flights) {
+          this.bookingDetails = historyState as PaymentPageState;
+          console.log('Retrieved from history:', this.bookingDetails);
+        } else {
+          console.log('No booking details found, redirecting...');
+          this.router.navigate(['/']);
+        }
+      }
+    }
+  }
 
   ngOnInit(): void {
+    if (!this.bookingDetails && isPlatformBrowser(this.platformId)) {
+      this.router.navigate(['/']);
+      return;
+    }
     this.initializeForm();
     this.setupFormListeners();
   }
@@ -117,7 +161,6 @@ export class PaymentSummaryComponent implements OnInit {
   }
 
   private setupFormListeners(): void {
-    // Listen for card number changes
     this.paymentForm.get('cardNumber')?.valueChanges.subscribe(value => {
       this.detectCardType(value);
     });
@@ -137,7 +180,6 @@ export class PaymentSummaryComponent implements OnInit {
     let input = event.target.value.replace(/\D/g, '');
     if (input.length > 16) input = input.substr(0, 16);
     
-    // Format with spaces
     let formatted = '';
     for (let i = 0; i < input.length; i++) {
       if (i > 0 && i % 4 === 0) {
@@ -198,65 +240,30 @@ export class PaymentSummaryComponent implements OnInit {
     return 'Invalid input';
   }
 
-  // async onSubmit(): Promise<void> {
-  //   if (this.paymentForm.valid) {
-  //     this.isProcessing = true;
-  //     try {
-  //       await new Promise(resolve => setTimeout(resolve, 1500));
-  //       console.log('Payment processed:', this.paymentForm.value);
-  //       this.router.navigate(['/booking-confirmation']);
-  //     } catch (error) {
-  //       console.error('Payment failed:', error);
-  //     } finally {
-  //       this.isProcessing = false;
-  //     }
-  //   } else {
-  //     Object.keys(this.paymentForm.controls).forEach(key => {
-  //       const control = this.paymentForm.get(key);
-  //       if (control?.invalid) {
-  //         control.markAsTouched();
-  //       }
-  //     });
-  //   }
-  // }
-
   async onSubmit(): Promise<void> {
-    if (this.paymentForm.valid) {
+    if (this.paymentForm.valid && this.bookingDetails) {
       this.isProcessing = true;
-      try {
       
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('Payment processed:', this.paymentForm.value);
+      try {
+        // Simulate payment processing
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
-        
-        const bookingRef = 'SKY' + Math.random().toString(36).substring(2, 8).toUpperCase();
-        
-     
-        const nameOnCard = this.paymentForm.get('nameOnCard')?.value;
-        
-   
-        this.router.navigate(['/confirmation'], { 
+        // Navigate to confirmation page with booking details
+        this.router.navigate(['/confirmation'], {
           state: {
-            booking: {
-              reference: bookingRef,
-              flight: `${this.flightDetails.from} to ${this.flightDetails.to}`,
-              date: this.flightDetails.date,
-              passenger: nameOnCard 
+            bookingData: {
+              reference: 'SKY' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+              flight: this.bookingDetails.flights.flight,
+              passenger: this.bookingDetails.passenger
             }
           }
         });
       } catch (error) {
-        console.error('Payment failed:', error);
+        console.error('Payment processing error:', error);
+        // Handle payment error
       } finally {
         this.isProcessing = false;
       }
-    } else {
-      Object.keys(this.paymentForm.controls).forEach(key => {
-        const control = this.paymentForm.get(key);
-        if (control?.invalid) {
-          control.markAsTouched();
-        }
-      });
     }
   }
 
