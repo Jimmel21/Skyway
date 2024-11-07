@@ -25,15 +25,15 @@ def get_airports():
 def search_flights():
     try:
         data = request.get_json()
-        print("Received search data:", data)  # Debug log
+        print("Received search data:", data) 
         
-        # Convert the date string to a Date object
+       
         search_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
         
-        # Debug log before query
+
         print(f"Searching for flights with: origin_id={data['origin_id']}, destination_id={data['destination_id']}, date={search_date}")
             
-        # Updated query to use departure_date
+  
         outbound_flights = Flight.query.filter(
             Flight.origin_id == data['origin_id'],
             Flight.destination_id == data['destination_id'],
@@ -55,7 +55,6 @@ def search_flights():
             ).all()
             print(f"Found {len(return_flights)} return flights")
 
-        # Let's check what's in the database for these routes
         all_route_flights = Flight.query.filter(
             Flight.origin_id == data['origin_id'],
             Flight.destination_id == data['destination_id']
@@ -85,13 +84,13 @@ def search_flights():
             } for flight in return_flights] if return_flights else []
         }
         
-        # Debug log response
+    
         print("Sending response:", response)
         
         return jsonify(response)
         
     except Exception as e:
-        print("Error in search_flights:", str(e))  # Debug log
+        print("Error in search_flights:", str(e))  
         return jsonify({'error': str(e)}), 500
 
 # @api_bp.route('/bookings', methods=['POST'])
@@ -191,12 +190,12 @@ def create_booking():
         db.session.add(passenger)
         db.session.flush()  # Get the passenger ID
         
-        # Validate flight exists and has available seats
+      
         flight = Flight.query.get_or_404(data['flight_id'])
         if flight.available_seats <= 0:
             return jsonify({'error': 'No seats available on this flight'}), 400
         
-        # Generate unique booking reference
+      
         booking_reference = f"SKY{uuid.uuid4().hex[:6].upper()}"
         
         # Create booking

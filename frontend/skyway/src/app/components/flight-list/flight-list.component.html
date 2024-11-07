@@ -1,10 +1,9 @@
-<!-- flight-list.component.html -->
+
 <div class="flight-results-container p-6 max-w-7xl mx-auto">
   <div class="results-content space-y-6">
-    <!-- Header Section -->
-    <div class="results-header space-y-4">
-      <!-- ... header content ... -->
 
+    <div class="results-header space-y-4">
+  
       <div class="search-summary flex justify-between items-center bg-gray-50 p-4 rounded-lg">
         <div class="route-info">
           <h2 class="text-lg font-semibold">
@@ -23,7 +22,7 @@
         </button>
       </div>
 
-      <!-- Loading and Error States -->
+   
       <div *ngIf="loading" class="flex justify-center py-8">
         <mat-spinner diameter="40"></mat-spinner>
       </div>
@@ -32,15 +31,35 @@
         {{error}}
       </div>
 
-      <!-- Sort Options -->
-      <div *ngIf="!noFlightsFound && !loading" class="sort-options flex gap-4">
-        <!-- ... sort buttons ... -->
+    
+      <div class="sort-options">
+        <button 
+          [class.active]="selectedSort === 'cheapest'"
+          (click)="sortFlights('cheapest')"
+        >
+          Cheapest
+        </button>
+      
+        <button 
+          [class.active]="selectedSort === 'fastest'"
+          (click)="sortFlights('fastest')"
+        >
+          Fastest
+        </button>
+      
+        <button 
+          [class.active]="selectedSort === 'best'"
+          (click)="sortFlights('best')"
+        >
+          Best Value
+        </button>
       </div>
+        
     </div>
 
-    <!-- Flight Lists -->
+ 
     <ng-container *ngIf="!loading">
-      <!-- No Results Message -->
+
       <div *ngIf="flights.length === 0" class="text-center py-12">
         <div class="mb-4">
           <mat-icon class="text-gray-400 text-6xl">flight_off</mat-icon>
@@ -50,7 +69,7 @@
         <button mat-raised-button color="primary" routerLink="/">Change Search</button>
       </div>
 
-      <!-- Outbound Flights -->
+    
       <div *ngIf="flights.length > 0" class="flights-section">
         <h3 *ngIf="searchDetails?.tripType === 'roundtrip'" class="text-lg font-semibold mb-4">
           Outbound Flights
@@ -60,7 +79,7 @@
           <div *ngFor="let flight of flights" 
                class="flight-card bg-white p-6 rounded-lg shadow-sm border hover:border-red-200 transition-all">
             <div class="grid grid-cols-12 gap-4 items-center">
-              <!-- Flight Details -->
+      
               <div class="col-span-8">
                 <div class="flight-details">
                   <div class="flex items-center gap-8">
@@ -79,7 +98,7 @@
                 </div>
               </div>
               
-              <!-- Price and Select Button -->
+            
               <div class="col-span-4 flex flex-col items-end justify-between">
                 <div class="text-right">
                   <div class="text-2xl font-bold text-red-600">${{flight.price}}</div>
@@ -99,7 +118,7 @@
         </div>
       </div>
 
-      <!-- Return Flights -->
+  
       <div *ngIf="returnFlights.length > 0" class="flights-section mt-8">
         <h3 class="text-lg font-semibold mb-4">Return Flights</h3>
         
@@ -107,7 +126,7 @@
           <div *ngFor="let flight of returnFlights" 
                class="flight-card bg-white p-6 rounded-lg shadow-sm border hover:border-red-200 transition-all">
             <div class="grid grid-cols-12 gap-4 items-center">
-              <!-- Flight Details -->
+     
               <div class="col-span-8">
                 <div class="flight-details">
                   <div class="flex items-center gap-8">
@@ -126,7 +145,7 @@
                 </div>
               </div>
               
-              <!-- Price and Select Button -->
+        
               <div class="col-span-4 flex flex-col items-end justify-between">
                 <div class="text-right">
                   <div class="text-2xl font-bold text-red-600">${{flight.price}}</div>
@@ -146,7 +165,7 @@
         </div>
       </div>
 
-      <!-- Load More Button -->
+   
       <div class="load-more">
         <button mat-stroked-button class="load-more-button" (click)="loadMoreResults()">
           Load More Results

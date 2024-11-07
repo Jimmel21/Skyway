@@ -96,7 +96,7 @@ export class SearchComponent implements OnInit {
       this.validateDifferentAirports();
     });
 
-    // Listen for departure date changes
+  
     this.searchForm.get('departDate')?.valueChanges.subscribe(date => {
       if (date && this.tripType === 'roundtrip') {
         const returnDateControl = this.searchForm.get('returnDate');
@@ -259,12 +259,12 @@ export class SearchComponent implements OnInit {
       const formValue = this.searchForm.value;
       
       try {
-        // Validate form values
+  
         if (!formValue.from?.id || !formValue.to?.id) {
           throw new Error('Please select valid airports');
         }
 
-        // Prepare search data
+    
         const searchData: FlightSearchRequest = {
           origin_id: formValue.from.id,
           destination_id: formValue.to.id,
@@ -289,7 +289,7 @@ export class SearchComponent implements OnInit {
             console.log('Outbound Flights:', response.outboundFlights); 
 
             const navigationState = {
-              searchResults: response.outboundFlights, // or response.flights?
+              searchResults: response.outboundFlights, 
               returnFlights: response.returnFlights || [],
               searchCriteria: {
                 ...searchData,

@@ -19,6 +19,6 @@ class Payment(db.Model):
         return f'<Payment for Booking {self.booking_id}>'
 
     def __init__(self, **kwargs):
-        # Remove CVV as it should never be stored
+     
         kwargs.pop('cvv', None)
         super(Payment, self).__init__(**kwargs)

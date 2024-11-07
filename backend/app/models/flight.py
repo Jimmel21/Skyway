@@ -7,11 +7,11 @@ class Flight(db.Model):
     
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     departure_date = db.Column(db.Date, nullable=False)
-    departure_time = db.Column(db.String(20), nullable=False)  # "08:00 AM" format
-    arrival_time = db.Column(db.String(20), nullable=False)    # "8:00 PM" format
+    departure_time = db.Column(db.String(20), nullable=False)  
+    arrival_time = db.Column(db.String(20), nullable=False)   
     origin_id = db.Column(db.Integer, db.ForeignKey('airports.id'), nullable=False)
     destination_id = db.Column(db.Integer, db.ForeignKey('airports.id'), nullable=False)
-    duration = db.Column(db.String(20), nullable=False)        # "7h 00m" format
+    duration = db.Column(db.String(20), nullable=False)     
     price = db.Column(db.Float, nullable=False)
     available_seats = db.Column(db.Integer, nullable=False, default=150)
 

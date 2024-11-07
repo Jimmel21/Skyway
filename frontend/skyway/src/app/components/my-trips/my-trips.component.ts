@@ -73,13 +73,12 @@ export class MyTripsComponent implements OnInit, OnDestroy {
   }
 
   private setValidatorsForCurrentMode(): void {
-    // Clear validators for all fields
+
     Object.keys(this.searchForm.controls).forEach(key => {
       this.searchForm.get(key)?.clearValidators();
       this.searchForm.get(key)?.updateValueAndValidity();
     });
 
-    // Set validators based on current mode
     if (this.searchMode === 'reference') {
       this.searchForm.get('bookingReference')?.setValidators([
         Validators.required,
@@ -97,7 +96,6 @@ export class MyTripsComponent implements OnInit, OnDestroy {
       ]);
     }
 
-    // Update validity
     Object.keys(this.searchForm.controls).forEach(key => {
       this.searchForm.get(key)?.updateValueAndValidity();
     });

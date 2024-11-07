@@ -31,7 +31,6 @@ export interface Flight {
   availableSeats: number;
 }
 
-// Updated to include both outbound and return flights
 export interface FlightSearchResponse {
   outboundFlights: Flight[];
   returnFlights?: Flight[];
@@ -75,7 +74,6 @@ export class AirportService {
     return this.http.get<Airport[]>(`${this.apiUrl}/airports`);
   }
 
-  // Updated to return FlightSearchResponse instead of Flight[]
   searchFlights(searchData: FlightSearchRequest): Observable<FlightSearchResponse> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
 

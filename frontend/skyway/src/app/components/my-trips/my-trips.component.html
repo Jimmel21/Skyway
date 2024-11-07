@@ -20,7 +20,7 @@
             </button>
           </div>
   
-          <!-- Booking Reference Search -->
+   
           @if (searchMode === 'reference') {
             <div class="form-section">
               <mat-form-field appearance="outline">
@@ -37,7 +37,7 @@
             </div>
           }
   
-          <!-- Email Search -->
+ 
           @if (searchMode === 'email') {
             <div class="form-section">
               <mat-form-field appearance="outline">
@@ -85,7 +85,7 @@
         </form>
       </div>
   
-      <!-- Error Message -->
+
       @if (error) {
         <div class="error-message">
           {{ error }}
@@ -99,7 +99,7 @@
         </div>
       }
   
-      <!-- Trip Results Section -->
+
       @if (trips.length > 0) {
         <div class="results-section">
           <h2 class="section-title">Your Trips ({{trips.length}} total)</h2>

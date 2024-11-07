@@ -3,7 +3,7 @@
   max-width: 1200px;
   margin: 0 auto;
 
-  // Trip Type Selection
+
   .trip-types {
     display: flex;
     gap: 0.5rem;
@@ -39,7 +39,7 @@
       .location-field {
         flex: 1;
         
-        // Override Material styles
+     
         ::ng-deep .mat-mdc-form-field-flex {
           background-color: white;
           border-radius: 0.5rem;
@@ -80,7 +80,7 @@
 
       .search-button {
         min-width: 200px;
-        height: 56px; // Match Material form field height
+        height: 56px; 
         padding: 0 1.5rem;
         background: #dc2626;
         color: white;
@@ -102,7 +102,7 @@
     }
   }
 
-  // Override Material Form Field Styles
+
   ::ng-deep {
     .mat-mdc-form-field {
       .mat-mdc-form-field-flex {

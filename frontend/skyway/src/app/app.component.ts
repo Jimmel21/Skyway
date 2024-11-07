@@ -15,7 +15,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   template: `
     <mat-toolbar class="navbar">
       <div class="nav-container">
-        <a routerLink="/" class="logo">SkyWay</a>
+        <a routerLink="/" class="logo">SkyHigh Airways</a>
         <div class="nav-links">
           <a routerLink="/">Search</a>
           <a routerLink="/my-trips">My Trips</a>

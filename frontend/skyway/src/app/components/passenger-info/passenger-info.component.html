@@ -2,12 +2,12 @@
   <div class="content">
     <h1>Passenger Information</h1>
 
-    <!-- Flight Summary -->
+ 
     <div class="flight-summary" *ngIf="selectedFlights">
       <div class="card bg-white p-4 rounded-lg shadow-sm mb-6">
         <h2 class="text-lg font-semibold mb-4">Flight Summary</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Outbound Flight -->
+
           <div class="flight-details">
             <h3 class="font-medium mb-2">Outbound Flight</h3>
             <p>{{selectedFlights.flight.origin}} → {{selectedFlights.flight.destination}}</p>
@@ -15,7 +15,7 @@
             <p>Arrival: {{selectedFlights.flight.arrivalTime}}</p>
           </div>
           
-          <!-- Return Flight if exists -->
+   
           <div class="flight-details" *ngIf="selectedFlights.returnFlight">
             <h3 class="font-medium mb-2">Return Flight</h3>
             <p>{{selectedFlights.returnFlight.origin}} → {{selectedFlights.returnFlight.destination}}</p>
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <!-- Passenger Form -->
+
     <div class="form-container">
       <div class="passenger-card">
         <h2 class="text-lg font-semibold mb-4">Passenger Details</h2>

@@ -276,7 +276,7 @@ export class PaymentSummaryComponent implements OnInit {
       
       try {
         if (this.bookingDetails.flights.returnFlight) {
-          // Handle round-trip booking
+          
           const outboundPayment = this.createPaymentRequest(this.bookingDetails.flights.flight.id);
           const returnPayment = this.createPaymentRequest(this.bookingDetails.flights.returnFlight.id);
 
@@ -303,7 +303,7 @@ export class PaymentSummaryComponent implements OnInit {
               }
             });
         } else {
-          // Handle one-way booking
+          
           const paymentRequest = this.createPaymentRequest(this.bookingDetails.flights.flight.id);
 
           this.paymentService.createBooking(paymentRequest)

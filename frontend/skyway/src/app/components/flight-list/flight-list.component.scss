@@ -54,31 +54,32 @@
 .sort-options {
   display: flex;
   gap: 1rem;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
 
   button {
-    flex: 1;
-    padding: 0.75rem;
-    background: white;
-    border: 1px solid #E5E7EB;
+    flex: 1; 
+    padding: 0.75rem 2rem;
+    min-width: 200px; 
     border-radius: 0.375rem;
+    font-size: 0.875rem;
     font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    background-color: #F3F4F6;
     color: #6B7280;
     cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      border-color: #FF424D;
-      color: #FF424D;
-    }
+    text-align: center;
 
     &.active {
-      border-color: #FF424D;
-      color: #FF424D;
+      background-color: #FF424D;
+      color: white;
+    }
+
+    &:hover:not(.active) {
+      background-color: #E5E7EB;
     }
   }
 }
-
 .flights-list {
   display: flex;
   flex-direction: column;
@@ -172,9 +173,8 @@
   }
 }
 
-// Material Design Button Overrides
 ::ng-deep {
-  // Select button override
+ 
   .flight-card {
     .select-button.mat-mdc-button, 
     .select-button.mdc-button,
@@ -200,7 +200,7 @@
     }
   }
 
-  // Change button override
+
   .change-button.mat-mdc-button,
   .change-button.mdc-button,
   button.change-button {

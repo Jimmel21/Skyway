@@ -4,10 +4,9 @@
 
     <div class="summary-grid">
       <div class="details-section">
-        <!-- Flight Summary Section -->
         <h2>Flight Details</h2>
         <div class="flight-info" *ngIf="bookingDetails">
-          <!-- Outbound Flight -->
+   
           <div class="flight-card">
             <h3>Outbound Flight</h3>
             <div class="info-row">
@@ -28,7 +27,7 @@
             </div>
           </div>
 
-          <!-- Return Flight if exists -->
+  
           <div class="flight-card" *ngIf="bookingDetails.flights.returnFlight">
             <h3>Return Flight</h3>
             <div class="info-row">
@@ -49,7 +48,7 @@
             </div>
           </div>
 
-          <!-- Passenger Details -->
+       
           <div class="passenger-card">
             <h3>Passenger Details</h3>
             <div class="info-row">
@@ -69,7 +68,7 @@
 
         <h2>Payment Information</h2>
         <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
-          <!-- Your existing card preview -->
+     
           <div class="card-preview" [class.flipped]="isCardFlipped || isCvvFocused">
             <div class="card-front">
               <div class="card-type" *ngIf="detectedCardType">
@@ -167,17 +166,17 @@
         </form>
       </div>
 
-      <!-- Right Column - Price Summary -->
+
       <div class="price-section" *ngIf="bookingDetails">
         <h2>Price Summary</h2>
         <div class="price-breakdown">
-          <!-- Outbound Flight -->
+       
           <div class="price-row">
             <span>Outbound Flight</span>
             <span>${{bookingDetails.flights.flight.price}}</span>
           </div>
           
-          <!-- Return Flight if exists -->
+       
           <div class="price-row" *ngIf="bookingDetails.flights.returnFlight">
             <span>Return Flight</span>
             <span>${{bookingDetails.flights.returnFlight.price}}</span>

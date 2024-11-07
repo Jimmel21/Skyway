@@ -224,7 +224,7 @@ h1 {
   }
 }
 
-// Card Preview Styles
+
 .card-preview {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   border-radius: 10px;
@@ -352,14 +352,14 @@ h1 {
   }
 }
 
-// Add these styles for smoother flip animation
+
 .card-front, .card-back {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform-style: preserve-3d;
 }
 
-// Animations
+
 @keyframes fadeIn {
   from {
     opacity: 0;

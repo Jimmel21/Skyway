@@ -1,5 +1,5 @@
 <div class="search-container">
-    <!-- Trip Type Selection -->
+ 
     <div class="trip-types">
       <button 
         (click)="onTripTypeChange('roundtrip')"
@@ -25,7 +25,7 @@
     </div>
   
     <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
-      <!-- First Row: Origin and Destination -->
+
       <div class="location-row">
         <mat-form-field appearance="outline" class="location-field">
           <input 
@@ -62,7 +62,7 @@
         </mat-form-field>
       </div>
   
-      <!-- Second Row: Dates, Passengers, and Search -->
+
       <div class="details-row">
         <mat-form-field appearance="outline" class="guests-field">
           <mat-select formControlName="guests" placeholder="1 Guest">

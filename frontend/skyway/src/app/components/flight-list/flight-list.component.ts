@@ -7,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+type SortOption = 'cheapest' | 'fastest' | 'best';
+
 interface SearchDetails {
   originName: string;
   destinationName: string;
@@ -39,6 +41,8 @@ export class FlightResultsComponent implements OnInit {
   noFlightsFound = false;
   loading = true;
   error: string | null = null;
+  originalFlights: Flight[] = [];
+
 
   constructor(private router: Router) {
     const navigation = this.router.getCurrentNavigation();
@@ -55,6 +59,7 @@ export class FlightResultsComponent implements OnInit {
     console.log('Search Details:', state?.searchCriteria);
 
     if (state) {
+      this.originalFlights = [...state.searchResults];
       this.flights = state.searchResults;
       this.returnFlights = state.returnFlights || [];
       this.searchDetails = state.searchCriteria;
@@ -68,7 +73,7 @@ export class FlightResultsComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.searchDetails) {
-      this.router.navigate(['/']); // Redirect to search if no search criteria
+      this.router.navigate(['/']);
       return;
     }
     this.sortFlights(this.selectedSort);
@@ -91,36 +96,76 @@ export class FlightResultsComponent implements OnInit {
 
   }
 
+  // sortFlights(criteria: 'cheapest' | 'fastest' | 'best'): void {
+  //   this.selectedSort = criteria;
+    
+  //   const sortFunction = (flightArray: Flight[]) => {
+  //     switch (criteria) {
+  //       case 'cheapest':
+  //         return flightArray.sort((a, b) => a.price - b.price);
+  //       case 'fastest':
+  //         return flightArray.sort((a, b) => 
+  //           this.getDurationInMinutes(a.duration) - this.getDurationInMinutes(b.duration)
+  //         );
+  //       case 'best':
+  //         return flightArray.sort((a, b) => 
+  //           (a.price / this.getDurationInMinutes(a.duration)) -
+  //           (b.price / this.getDurationInMinutes(b.duration))
+  //         );
+  //     }
+  //   };
+
+  //   this.flights = sortFunction([...this.flights]);
+  //   if (this.returnFlights.length > 0) {
+  //     this.returnFlights = sortFunction([...this.returnFlights]);
+  //   }
+  // }
+
+  // private getDurationInMinutes(duration: string): number {
+  //   const [hours, minutes] = duration.split('h ').map(part => 
+  //     parseInt(part.replace('m', ''))
+  //   );
+  //   return (hours * 60) + (minutes || 0);
+  // }
+
   sortFlights(criteria: 'cheapest' | 'fastest' | 'best'): void {
+    console.log('Sorting by:', criteria); // Debug log
     this.selectedSort = criteria;
     
-    const sortFunction = (flightArray: Flight[]) => {
-      switch (criteria) {
-        case 'cheapest':
-          return flightArray.sort((a, b) => a.price - b.price);
-        case 'fastest':
-          return flightArray.sort((a, b) => 
-            this.getDurationInMinutes(a.duration) - this.getDurationInMinutes(b.duration)
-          );
-        case 'best':
-          return flightArray.sort((a, b) => 
-            (a.price / this.getDurationInMinutes(a.duration)) -
-            (b.price / this.getDurationInMinutes(b.duration))
-          );
-      }
-    };
-
-    this.flights = sortFunction([...this.flights]);
-    if (this.returnFlights.length > 0) {
-      this.returnFlights = sortFunction([...this.returnFlights]);
+    // Always sort from the original list to avoid cumulative sorting issues
+    const flightsToSort = [...this.originalFlights];
+    
+    switch (criteria) {
+      case 'cheapest':
+        this.flights = flightsToSort.sort((a, b) => a.price - b.price);
+        break;
+      
+      case 'fastest':
+        this.flights = flightsToSort.sort((a, b) => {
+          const durationA = this.getDurationInMinutes(a.duration);
+          const durationB = this.getDurationInMinutes(b.duration);
+          return durationA - durationB;
+        });
+        break;
+      
+      case 'best':
+        this.flights = flightsToSort.sort((a, b) => {
+          const valueA = a.price / this.getDurationInMinutes(a.duration);
+          const valueB = b.price / this.getDurationInMinutes(b.duration);
+          return valueA - valueB;
+        });
+        break;
     }
+
+    console.log('Sorted flights:', this.flights); // Debug log
   }
 
   private getDurationInMinutes(duration: string): number {
-    const [hours, minutes] = duration.split('h ').map(part => 
-      parseInt(part.replace('m', ''))
-    );
-    return (hours * 60) + (minutes || 0);
+    // Handle duration in format "7h 00m"
+    const [hours, minutes] = duration.split('h ');
+    const hoursNum = parseInt(hours) || 0;
+    const minutesNum = parseInt(minutes?.replace('m', '')) || 0;
+    return (hoursNum * 60) + minutesNum;
   }
 
   formatDuration(duration: string): string {

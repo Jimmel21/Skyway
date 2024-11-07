@@ -36,7 +36,6 @@ export class PassengerInfoComponent implements OnInit {
     if (state) {
       this.selectedFlights = state;
     } else {
-      // If no flight data, redirect back to search
       this.router.navigate(['/']);
     }
 
@@ -66,7 +65,6 @@ export class PassengerInfoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // If no flight data was passed, redirect to search page
     if (!this.selectedFlights) {
       this.router.navigate(['/']);
     }
@@ -92,7 +90,7 @@ export class PassengerInfoComponent implements OnInit {
     if (this.passengerForm.valid && this.selectedFlights) {
       const passengerInfo = this.passengerForm.value;
       
-      // Navigate to payment page with both passenger and flight info
+ 
       this.router.navigate(['/payment'], {
         state: {
           passenger: passengerInfo,

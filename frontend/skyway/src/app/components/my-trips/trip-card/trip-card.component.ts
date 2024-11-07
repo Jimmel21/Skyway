@@ -17,7 +17,7 @@ export class TripCardComponent {
 
   formatTime(timeString: string): string {
     if (!timeString) return 'Invalid Time';
-    // Assuming timeString is in format "09:30 PM"
+  
     try {
       return timeString;
     } catch (error) {
