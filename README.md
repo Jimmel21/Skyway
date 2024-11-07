@@ -1,5 +1,3 @@
-# Skyway
-
 # SkyWay Airlines Booking System
 
 A flight booking application built with Angular 18.2.9 (frontend) and Flask (backend).
@@ -35,15 +33,24 @@ Server runs at `http://localhost:8000`
 
 ### Frontend Setup
 
-1. Navigate to frontend directory and install dependencies:
+1. Navigate to frontend directory:
 ```bash
 cd frontend
-npm install
 ```
 
-2. Install required UI component packages:
+2. Install required packages:
 ```bash
-npm install @radix-ui/react-alert-dialog @radix-ui/react-slot class-variance-authority clsx lucide-react tailwindcss-animate
+npm install @angular/animations @angular/common @angular/compiler @angular/core @angular/forms @angular/platform-browser @angular/platform-browser-dynamic @angular/router
+npm install @angular/material @angular/cdk
+npm install @angular/flex-layout
+npm install html2pdf.js
+npm install date-fns
+npm install rxjs
+npm install zone.js
+npm install tailwindcss @tailwindcss/forms postcss autoprefixer
+npm install @radix-ui/react-alert-dialog @radix-ui/react-slot
+npm install class-variance-authority clsx tailwindcss-animate
+npm install lucide-react
 ```
 
 3. Start the Angular development server:
@@ -78,3 +85,8 @@ For frontend dependency issues:
 ```bash
 npm install --force
 ```
+
+## Known Limitations
+
+1. The featured destinations are not stored so the developer would need to update when required.
+2. Recent searches are not stored or displayed
