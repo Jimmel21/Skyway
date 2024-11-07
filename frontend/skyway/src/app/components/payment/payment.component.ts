@@ -3,6 +3,9 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { PaymentService, BookingRequest, BookingResponse } from '../../services/payment.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 interface CardType {
   name: string;
@@ -52,12 +55,10 @@ interface PaymentPageState {
   animations: [
     trigger('loadingState', [
       state('loading', style({
-        opacity: 0.7,
-        pointerEvents: 'none'
+        opacity: 0.7
       })),
       state('not-loading', style({
-        opacity: 1,
-        pointerEvents: 'all'
+        opacity: 1
       })),
       transition('loading <=> not-loading', animate('200ms ease-in-out'))
     ]),
@@ -79,6 +80,7 @@ export class PaymentSummaryComponent implements OnInit {
   detectedCardType: string = '';
   isCardFlipped = false;
   isCvvFocused = false;
+  errorMessage: string = '';
 
   readonly cardTypes: CardType[] = [
     {
@@ -106,9 +108,9 @@ export class PaymentSummaryComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private paymentService: PaymentService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    
     if (isPlatformBrowser(this.platformId)) {
       const navigation = this.router.getCurrentNavigation();
       const state = navigation?.extras?.state as PaymentPageState;
@@ -117,7 +119,6 @@ export class PaymentSummaryComponent implements OnInit {
         this.bookingDetails = state;
         console.log('Received booking details:', this.bookingDetails);
       } else {
-        // If no state in navigation, check history state
         const historyState = history.state;
         if (historyState && historyState.passenger && historyState.flights) {
           this.bookingDetails = historyState as PaymentPageState;
@@ -212,6 +213,34 @@ export class PaymentSummaryComponent implements OnInit {
     this.isCvvFocused = false;
   }
 
+  private createPaymentRequest(flightId: string): BookingRequest {
+    if (!this.bookingDetails || !this.paymentForm.valid) {
+      throw new Error('Invalid form or booking details');
+    }
+
+    const formatDate = (dateStr: string): string => {
+      const date = new Date(dateStr);
+      return date.toISOString().split('T')[0];
+    };
+
+    return {
+      flight_id: flightId,
+      passenger: {
+        first_name: this.bookingDetails.passenger.firstName,
+        last_name: this.bookingDetails.passenger.lastName,
+        email: this.bookingDetails.passenger.email,
+        phone_number: this.bookingDetails.passenger.phoneNumber,
+        date_of_birth: formatDate(this.bookingDetails.passenger.dateOfBirth),
+        gender: this.bookingDetails.passenger.gender
+      },
+      payment: {
+        card_number: this.paymentForm.get('cardNumber')?.value,
+        expiry_date: this.paymentForm.get('expiryDate')?.value,
+        name_on_card: this.paymentForm.get('nameOnCard')?.value
+      }
+    };
+  }
+
   getErrorMessage(fieldName: string): string {
     const control = this.paymentForm.get(fieldName);
     
@@ -243,28 +272,90 @@ export class PaymentSummaryComponent implements OnInit {
   async onSubmit(): Promise<void> {
     if (this.paymentForm.valid && this.bookingDetails) {
       this.isProcessing = true;
+      this.errorMessage = '';
       
       try {
-        // Simulate payment processing
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Navigate to confirmation page with booking details
-        this.router.navigate(['/confirmation'], {
-          state: {
-            bookingData: {
-              reference: 'SKY' + Math.random().toString(36).substr(2, 6).toUpperCase(),
-              flight: this.bookingDetails.flights.flight,
-              passenger: this.bookingDetails.passenger
-            }
-          }
-        });
+        if (this.bookingDetails.flights.returnFlight) {
+          // Handle round-trip booking
+          const outboundPayment = this.createPaymentRequest(this.bookingDetails.flights.flight.id);
+          const returnPayment = this.createPaymentRequest(this.bookingDetails.flights.returnFlight.id);
+
+          this.paymentService.createRoundTripBooking(outboundPayment, returnPayment)
+            .pipe(
+              catchError(error => {
+                console.error('Booking creation error:', error);
+                this.errorMessage = error.error?.error || 'Failed to create booking. Please try again.';
+                throw error;
+              }),
+              finalize(() => this.isProcessing = false)
+            )
+            .subscribe({
+              next: ([outboundResponse, returnResponse]) => {
+                this.navigateToConfirmation(outboundResponse.booking_reference, {
+                  outbound: outboundResponse,
+                  return: returnResponse
+                });
+              },
+              error: (error) => {
+                console.error('Booking creation error:', error);
+                this.errorMessage = error.error?.error || 'Failed to create booking. Please try again.';
+                this.isProcessing = false;
+              }
+            });
+        } else {
+          // Handle one-way booking
+          const paymentRequest = this.createPaymentRequest(this.bookingDetails.flights.flight.id);
+
+          this.paymentService.createBooking(paymentRequest)
+            .pipe(
+              catchError(error => {
+                console.error('Booking creation error:', error);
+                this.errorMessage = error.error?.error || 'Failed to create booking. Please try again.';
+                throw error;
+              }),
+              finalize(() => this.isProcessing = false)
+            )
+            .subscribe({
+              next: (response) => {
+                this.navigateToConfirmation(response.booking_reference, {
+                  outbound: response
+                });
+              },
+              error: (error) => {
+                console.error('Booking creation error:', error);
+                this.errorMessage = error.error?.error || 'Failed to create booking. Please try again.';
+                this.isProcessing = false;
+              }
+            });
+        }
       } catch (error) {
-        console.error('Payment processing error:', error);
-        // Handle payment error
-      } finally {
+        console.error('Error processing payment:', error);
         this.isProcessing = false;
+        this.errorMessage = 'An unexpected error occurred. Please try again.';
       }
+    } else {
+      Object.keys(this.paymentForm.controls).forEach(key => {
+        const control = this.paymentForm.get(key);
+        control?.markAsTouched();
+      });
     }
+  }
+
+  private navigateToConfirmation(bookingReference: string, bookingResponses: {
+    outbound: BookingResponse;
+    return?: BookingResponse;
+  }): void {
+    this.router.navigate(['/confirmation'], {
+      state: {
+        bookingData: {
+          reference: bookingReference,
+          flight: this.bookingDetails?.flights.flight,
+          returnFlight: this.bookingDetails?.flights.returnFlight,
+          passenger: this.bookingDetails?.passenger,
+          bookingResponses
+        }
+      }
+    });
   }
 
   getCardIcon(): string {

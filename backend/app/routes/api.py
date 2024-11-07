@@ -94,31 +94,92 @@ def search_flights():
         print("Error in search_flights:", str(e))  # Debug log
         return jsonify({'error': str(e)}), 500
 
+# @api_bp.route('/bookings', methods=['POST'])
+# def create_booking():
+#     """
+#     Create Booking API
+#     Expects JSON: {
+#         "flight_id": "flight_uuid",
+#         "passenger": {
+#             "first_name": "John",
+#             "last_name": "Doe",
+#             "email": "john@example.com",
+#             "phone_number": "1234567890",
+#             "date_of_birth": "1990-01-01",
+#             "gender": "Male"
+#         }
+#     }
+#     """
+#     try:
+#         data = request.get_json()
+        
+#         # Validate flight exists and has available seats
+#         flight = Flight.query.get_or_404(data['flight_id'])
+#         if flight.available_seats <= 0:
+#             return jsonify({'error': 'No seats available on this flight'}), 400
+        
+#         # Create passenger
+#         passenger = Passenger(
+#             first_name=data['passenger']['first_name'],
+#             last_name=data['passenger']['last_name'],
+#             email=data['passenger']['email'],
+#             phone_number=data['passenger']['phone_number'],
+#             date_of_birth=data['passenger']['date_of_birth'],
+#             gender=data['passenger']['gender']
+#         )
+#         db.session.add(passenger)
+        
+#         # Generate unique booking reference
+#         booking_reference = f"SKY{uuid.uuid4().hex[:6].upper()}"
+        
+#         # Create booking
+#         booking = Booking(
+#             reference=booking_reference,
+#             flight_id=flight.id,
+#             passenger_id=passenger.id
+#         )
+#         db.session.add(booking)
+        
+#         # Update flight seats
+#         flight.available_seats -= 1
+        
+#         db.session.commit()
+        
+#         # Return booking reference
+#         return jsonify({
+#             'booking_reference': booking_reference,
+#             'message': 'Booking created successfully'
+#         }), 201
+        
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({'error': str(e)}), 400
+
 @api_bp.route('/bookings', methods=['POST'])
 def create_booking():
     """
     Create Booking API
     Expects JSON: {
-        "flight_id": "flight_uuid",
+        "flight_id": "string",
         "passenger": {
-            "first_name": "John",
-            "last_name": "Doe",
-            "email": "john@example.com",
-            "phone_number": "1234567890",
-            "date_of_birth": "1990-01-01",
-            "gender": "Male"
+            "first_name": "string",
+            "last_name": "string",
+            "email": "string",
+            "phone_number": "string",
+            "date_of_birth": "string",
+            "gender": "string"
+        },
+        "payment": {
+            "card_number": "string",
+            "expiry_date": "string",
+            "name_on_card": "string"
         }
     }
     """
     try:
         data = request.get_json()
         
-        # Validate flight exists and has available seats
-        flight = Flight.query.get_or_404(data['flight_id'])
-        if flight.available_seats <= 0:
-            return jsonify({'error': 'No seats available on this flight'}), 400
-        
-        # Create passenger
+        # Create passenger first
         passenger = Passenger(
             first_name=data['passenger']['first_name'],
             last_name=data['passenger']['last_name'],
@@ -128,6 +189,12 @@ def create_booking():
             gender=data['passenger']['gender']
         )
         db.session.add(passenger)
+        db.session.flush()  # Get the passenger ID
+        
+        # Validate flight exists and has available seats
+        flight = Flight.query.get_or_404(data['flight_id'])
+        if flight.available_seats <= 0:
+            return jsonify({'error': 'No seats available on this flight'}), 400
         
         # Generate unique booking reference
         booking_reference = f"SKY{uuid.uuid4().hex[:6].upper()}"
@@ -136,7 +203,8 @@ def create_booking():
         booking = Booking(
             reference=booking_reference,
             flight_id=flight.id,
-            passenger_id=passenger.id
+            passenger_id=passenger.id,
+            status='CONFIRMED'
         )
         db.session.add(booking)
         
@@ -145,16 +213,31 @@ def create_booking():
         
         db.session.commit()
         
-        # Return booking reference
+        # Return booking details
         return jsonify({
             'booking_reference': booking_reference,
-            'message': 'Booking created successfully'
+            'message': 'Booking created successfully',
+            'flight': {
+                'id': flight.id,
+                'origin': flight.origin_airport.display_name,
+                'destination': flight.destination_airport.display_name,
+                'departure_time': flight.departure_time,
+                'arrival_time': flight.arrival_time
+            },
+            'passenger': {
+                'id': passenger.id,
+                'name': f"{passenger.first_name} {passenger.last_name}",
+                'email': passenger.email
+            }
         }), 201
         
+    except KeyError as e:
+        return jsonify({'error': f'Missing required field: {str(e)}'}), 400
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
-
+    
+    
 @api_bp.route('/bookings/search', methods=['POST'])
 def search_bookings():
     """

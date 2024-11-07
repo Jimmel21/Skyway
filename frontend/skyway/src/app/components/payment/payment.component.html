@@ -3,90 +3,73 @@
     <h1>Summary and Payment</h1>
 
     <div class="summary-grid">
-      <!-- Flight and Passenger Details Section -->
-      <div class="details-section" *ngIf="bookingDetails">
+      <div class="details-section">
+        <!-- Flight Summary Section -->
         <h2>Flight Details</h2>
-        <div class="details-content" @fadeInOut>
+        <div class="flight-info" *ngIf="bookingDetails">
           <!-- Outbound Flight -->
           <div class="flight-card">
-            <div class="flight-header">
-              <h3>Outbound Flight</h3>
-              <span class="flight-price">${{bookingDetails.flights.flight.price}}</span>
+            <h3>Outbound Flight</h3>
+            <div class="info-row">
+              <span class="label">From:</span>
+              <span class="value">{{bookingDetails.flights.flight.origin}}</span>
             </div>
-            <div class="flight-details">
-              <div class="route">
-                <span class="city">{{bookingDetails.flights.flight.origin}}</span>
-                <span class="arrow">→</span>
-                <span class="city">{{bookingDetails.flights.flight.destination}}</span>
-              </div>
-              <div class="times">
-                <div class="departure">
-                  <span class="label">Departure</span>
-                  <span class="time">{{bookingDetails.flights.flight.departureTime}}</span>
-                </div>
-                <div class="arrival">
-                  <span class="label">Arrival</span>
-                  <span class="time">{{bookingDetails.flights.flight.arrivalTime}}</span>
-                </div>
-              </div>
+            <div class="info-row">
+              <span class="label">To:</span>
+              <span class="value">{{bookingDetails.flights.flight.destination}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Departure:</span>
+              <span class="value">{{bookingDetails.flights.flight.departureTime}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Arrival:</span>
+              <span class="value">{{bookingDetails.flights.flight.arrivalTime}}</span>
             </div>
           </div>
 
           <!-- Return Flight if exists -->
           <div class="flight-card" *ngIf="bookingDetails.flights.returnFlight">
-            <div class="flight-header">
-              <h3>Return Flight</h3>
-              <span class="flight-price">${{bookingDetails.flights.returnFlight.price}}</span>
+            <h3>Return Flight</h3>
+            <div class="info-row">
+              <span class="label">From:</span>
+              <span class="value">{{bookingDetails.flights.returnFlight.origin}}</span>
             </div>
-            <div class="flight-details">
-              <div class="route">
-                <span class="city">{{bookingDetails.flights.returnFlight.origin}}</span>
-                <span class="arrow">→</span>
-                <span class="city">{{bookingDetails.flights.returnFlight.destination}}</span>
-              </div>
-              <div class="times">
-                <div class="departure">
-                  <span class="label">Departure</span>
-                  <span class="time">{{bookingDetails.flights.returnFlight.departureTime}}</span>
-                </div>
-                <div class="arrival">
-                  <span class="label">Arrival</span>
-                  <span class="time">{{bookingDetails.flights.returnFlight.arrivalTime}}</span>
-                </div>
-              </div>
+            <div class="info-row">
+              <span class="label">To:</span>
+              <span class="value">{{bookingDetails.flights.returnFlight.destination}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Departure:</span>
+              <span class="value">{{bookingDetails.flights.returnFlight.departureTime}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Arrival:</span>
+              <span class="value">{{bookingDetails.flights.returnFlight.arrivalTime}}</span>
             </div>
           </div>
 
           <!-- Passenger Details -->
           <div class="passenger-card">
             <h3>Passenger Details</h3>
-            <div class="passenger-details">
-              <div class="detail-row">
-                <span class="label">Name:</span>
-                <span class="value">{{bookingDetails.passenger.firstName}} {{bookingDetails.passenger.lastName}}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Email:</span>
-                <span class="value">{{bookingDetails.passenger.email}}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Phone:</span>
-                <span class="value">{{bookingDetails.passenger.phoneNumber}}</span>
-              </div>
+            <div class="info-row">
+              <span class="label">Name:</span>
+              <span class="value">{{bookingDetails.passenger.firstName}} {{bookingDetails.passenger.lastName}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Email:</span>
+              <span class="value">{{bookingDetails.passenger.email}}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Phone:</span>
+              <span class="value">{{bookingDetails.passenger.phoneNumber}}</span>
             </div>
           </div>
-
-          <!-- Total Price -->
-          <div class="total-price">
-            <span class="label">Total Price</span>
-            <span class="amount">${{bookingDetails.flights.totalPrice}}</span>
-          </div>
         </div>
-      </div>
 
-      <div class="details-section">
         <h2>Payment Information</h2>
         <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+          <!-- Your existing card preview -->
           <div class="card-preview" [class.flipped]="isCardFlipped || isCvvFocused">
             <div class="card-front">
               <div class="card-type" *ngIf="detectedCardType">
@@ -184,13 +167,39 @@
         </form>
       </div>
 
-      <div class="price-section">
+      <!-- Right Column - Price Summary -->
+      <div class="price-section" *ngIf="bookingDetails">
+        <h2>Price Summary</h2>
+        <div class="price-breakdown">
+          <!-- Outbound Flight -->
+          <div class="price-row">
+            <span>Outbound Flight</span>
+            <span>${{bookingDetails.flights.flight.price}}</span>
+          </div>
+          
+          <!-- Return Flight if exists -->
+          <div class="price-row" *ngIf="bookingDetails.flights.returnFlight">
+            <span>Return Flight</span>
+            <span>${{bookingDetails.flights.returnFlight.price}}</span>
+          </div>
+
+          <div class="price-row">
+            <span>Taxes & Fees</span>
+            <span>$50</span>
+          </div>
+
+          <div class="price-row total">
+            <span>Total</span>
+            <span>${{bookingDetails.flights.totalPrice}}</span>
+          </div>
+        </div>
+
         <button 
           class="pay-button" 
           (click)="onSubmit()"
           [disabled]="paymentForm.invalid || isProcessing">
           <div class="button-content" @fadeInOut>
-            <span *ngIf="!isProcessing">Pay ${{bookingDetails?.flights?.totalPrice}}</span>
+            <span *ngIf="!isProcessing">Confirm and Pay ${{bookingDetails.flights.totalPrice}}</span>
             <div class="loading-spinner" *ngIf="isProcessing">
               <div class="spinner"></div>
               <span>Processing...</span>
