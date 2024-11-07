@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <!-- Sky Background -->
+  <rect width="800" height="400" fill="#B0E2FF"/>
+  
+  <!-- Eiffel Tower -->
+  <path d="M350 350L400 100L450 350" fill="#696969"/>
+  <path d="M375 225H425" stroke="#696969" stroke-width="10"/>
+  <path d="M365 175H435" stroke="#696969" stroke-width="8"/>
+  <path d="M390 125H410" stroke="#696969" stroke-width="5"/>
+  
+  <!-- Arc de Triomphe -->
+  <path d="M600 350V250A50 50 0 0 1 700 250V350" fill="#DEB887"/>
+  <path d="M625 280H675" stroke="#8B4513" stroke-width="5"/>
+  
+  <!-- Seine River -->
+  <path d="M0 320C200 300 600 340 800 320" fill="none" stroke="#4682B4" stroke-width="20"/>
+  
+  <!-- Buildings -->
+  <rect x="100" y="200" width="40" height="150" fill="#DEB887"/>
+  <rect x="150" y="220" width="30" height="130" fill="#D2B48C"/>
+  <rect x="200" y="180" width="50" height="170" fill="#DEB887"/>
+  
+  <!-- Cafe -->
+  <rect x="50" y="280" width="60" height="70" fill="#8B4513"/>
+  <path d="M40 280H120" stroke="#A0522D" stroke-width="5"/>
+  
+  <!-- Windows -->
+  <rect x="110" y="220" width="10" height="20" fill="#FFD700"/>
+  <rect x="160" y="240" width="10" height="20" fill="#FFD700"/>
+  <rect x="210" y="200" width="10" height="20" fill="#FFD700"/>
+</svg>

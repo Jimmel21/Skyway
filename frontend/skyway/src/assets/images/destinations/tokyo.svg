@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <!-- Sky Background -->
+  <rect width="800" height="400" fill="#FFE4E1"/>
+  
+  <!-- Mount Fuji -->
+  <path d="M50 350L200 150L350 350" fill="#F0F8FF"/>
+  <path d="M150 250L200 200L250 250" fill="#FFFFFF"/>
+  
+  <!-- Tokyo Tower -->
+  <path d="M500 350L520 150L540 350" fill="#FF4500"/>
+  <path d="M510 250H550" stroke="#FF4500" stroke-width="5"/>
+  <path d="M505 200H555" stroke="#FF4500" stroke-width="5"/>
+  
+  <!-- Skytree -->
+  <path d="M600 350L620 100L640 350" fill="#87CEEB"/>
+  <circle cx="620" cy="90" r="10" fill="#87CEEB"/>
+  
+  <!-- Modern Buildings -->
+  <rect x="400" y="200" width="40" height="150" fill="#4682B4"/>
+  <rect x="450" y="180" width="30" height="170" fill="#20B2AA"/>
+  <rect x="700" y="220" width="50" height="130" fill="#48D1CC"/>
+  
+  <!-- Cherry Blossoms -->
+  <circle cx="100" cy="100" r="15" fill="#FFB6C1"/>
+  <circle cx="150" cy="80" r="12" fill="#FFB6C1"/>
+  <circle cx="700" cy="100" r="15" fill="#FFB6C1"/>
+  <circle cx="650" cy="90" r="12" fill="#FFB6C1"/>
+</svg>

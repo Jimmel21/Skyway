@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <!-- Sky Background -->
+  <rect width="800" height="400" fill="#87CEEB"/>
+  
+  <!-- Sun -->
+  <circle cx="100" cy="80" r="40" fill="#FFD700"/>
+  
+  <!-- Empire State Building -->
+  <path d="M350 350V150L370 120L390 150V350" fill="#808080"/>
+  <path d="M360 120L370 50L380 120" fill="#808080"/>
+  
+  <!-- One World Trade Center -->
+  <path d="M500 350V100L520 50L540 100V350" fill="#87CEFA"/>
+  
+  <!-- Chrysler Building -->
+  <path d="M200 350V180L220 140L240 180V350" fill="#A9A9A9"/>
+  <path d="M210 140L220 80L230 140" fill="#A9A9A9"/>
+  
+  <!-- Other Buildings -->
+  <rect x="100" y="200" width="40" height="150" fill="#696969"/>
+  <rect x="150" y="220" width="30" height="130" fill="#778899"/>
+  <rect x="600" y="180" width="50" height="170" fill="#708090"/>
+  <rect x="670" y="150" width="40" height="200" fill="#808080"/>
+  
+  <!-- Windows -->
+  <rect x="360" y="160" width="5" height="180" fill="#FFFF00" opacity="0.5"/>
+  <rect x="375" y="160" width="5" height="180" fill="#FFFF00" opacity="0.5"/>
+  <rect x="510" y="120" width="5" height="220" fill="#FFFF00" opacity="0.5"/>
+  <rect x="525" y="120" width="5" height="220" fill="#FFFF00" opacity="0.5"/>
+</svg>
