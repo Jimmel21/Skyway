@@ -1,48 +1,67 @@
-<div class="confirmation-container" @fadeIn>
+<div class="confirmation-container">
   <div class="success-icon">
-    <img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgMjQgMjQiIGNsYXNzPSJjaGVja21hcmsiPgogICAgICA8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJNNSAxM2w0IDRMMTkgNyI+CiAgICAgIDwvcGF0aD4KICAgIDwvc3ZnPg==" class="checkmark" alt="Success checkmark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
   </div>
 
-  <h1 class="title">Booking Confirmed!</h1>
+  <h1>Booking Confirmed!</h1>
+  <p class="confirmation-message">
+    Thank you for choosing SkyWay Airlines. Your booking has been successfully confirmed.
+  </p>
 
-  <p>Thank you for choosing SkyWay Airlines. Your booking has been successfully confirmed.</p>
+  <div class="booking-details">
+    <h2>Booking Details</h2>
+    
+    <div class="detail-row">
+      <div class="label">Booking Reference:</div>
+      <div>{{bookingDetails?.reference || 'SKY123456'}}</div>
+    </div>
 
-  <div class="booking-card">
-    <h2 class="card-title">Booking Details</h2>
+    <div class="detail-row">
+      <div class="label">Flight:</div>
+      <div>{{bookingDetails?.flight?.origin}} to {{bookingDetails?.flight?.destination}}</div>
+    </div>
 
-    <div class="details-grid">
-      <div class="detail-item">
-        <span class="label">Booking Reference:</span>
-        <span class="value">{{bookingDetails?.reference}}</span>
-      </div>
+    <div class="detail-row">
+      <div class="label">Date:</div>
+      <div>{{getFormattedDate(bookingDetails?.flight)}}</div>
+    </div>
 
-      <div class="detail-item">
-        <span class="label">Flight:</span>
-        <span class="value">{{getFormattedFlightRoute()}}</span>
-      </div>
-
-      <div class="detail-item">
-        <span class="label">Date:</span>
-        <span class="value">{{getFormattedDate()}}</span>
-      </div>
-
-      <div class="detail-item">
-        <span class="label">Passenger:</span>
-        <span class="value">{{getPassengerName()}}</span>
+    <div class="detail-row" *ngIf="bookingDetails?.returnFlight">
+      <div class="label">Return Flight:</div>
+      <div>
+        {{bookingDetails?.returnFlight?.origin}} to {{bookingDetails?.returnFlight?.destination}}
       </div>
     </div>
 
-    <div class="action-buttons">
-      <button (click)="downloadETicket()" [disabled]="isLoading">
-        <span *ngIf="!isLoading">Download E-Ticket</span>
-        <span *ngIf="isLoading">Generating...</span>
-      </button>
-      <button (click)="printConfirmation()">Print Confirmation</button>
+    <div class="detail-row" *ngIf="bookingDetails?.returnFlight">
+      <div class="label">Return Date:</div>
+      <div>{{getFormattedDate(bookingDetails?.returnFlight)}}</div>
     </div>
+
+    <div class="detail-row">
+      <div class="label">Passenger:</div>
+      <div>{{getPassengerName()}}</div>
+    </div>
+
+    <div class="detail-row">
+      <div class="label">Total Price:</div>
+      <div>{{getFormattedPrice(bookingDetails?.totalPrice || 0)}}</div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button (click)="downloadETicket()" [disabled]="isLoading">
+      {{isLoading ? 'Generating...' : 'Download E-Ticket'}}
+    </button>
+    <button (click)="printConfirmation()">
+      Print Confirmation
+    </button>
   </div>
 
   <div class="footer-text">
-    <p>We've sent a confirmation email to {{bookingDetails?.passenger?.email}}.</p>
+    <p>We've sent a confirmation email to {{bookingDetails?.passenger?.email || 'your registered email address'}}.</p>
     <p>If you have any questions, please contact our customer support.</p>
   </div>
 </div>
